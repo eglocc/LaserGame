@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "701295221579",
+    "firebase_url": "https://lasergame-cf2e9.firebaseio.com",
+    "project_id": "lasergame-cf2e9",
+    "storage_bucket": "lasergame-cf2e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701295221579:android:8bbb52e136fcea4a",
+        "android_client_info": {
+          "package_name": "com.ergizgizer.lasergame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "701295221579-57kefl4dearh5ij14i56hjembnrc9re3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ergizgizer.lasergame",
+            "certificate_hash": "a79a28a7963543b9b3f292a67cba59bc72a471c0"
+          }
+        },
+        {
+          "client_id": "701295221579-clgojp2j4s7gt46mtd1sdtacvcvre2kq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2fPC23_c4_Ea_P2bVyKu6ctUKCUnEdig"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "701295221579-clgojp2j4s7gt46mtd1sdtacvcvre2kq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
