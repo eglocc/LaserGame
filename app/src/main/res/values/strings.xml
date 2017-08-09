@@ -4,4 +4,6 @@
     <string name="fb_login_protocol_scheme">fb133429360593684</string>
 
     <string name="auth_failed">Authentication Failed!</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 </resources>

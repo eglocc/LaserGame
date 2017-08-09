@@ -9,22 +9,28 @@
         android:id="@+id/icon"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_margin="2dp" />
+        android:layout_margin="2dp"
+        android:src="@drawable/logo"
+        android:background="@color/black" />
 
     <EditText
-        android:id="@+id/set_nickname"
+        android:id="@+id/set_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ems="8"
+        android:layout_marginTop="20dp"
         android:fontFamily="sans-serif-medium"
-        android:hint="Username"
+        android:hint="@string/username"
         android:inputType="text" />
 
-    <Button
-        android:id="@+id/enter_nickname"
+    <EditText
+        android:id="@+id/set_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="" />
+        android:ems="8"
+        android:fontFamily="sans-serif-medium"
+        android:hint="@string/password"
+        android:inputType="text" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/google_sign_in_button"

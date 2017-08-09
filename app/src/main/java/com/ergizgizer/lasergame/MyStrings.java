@@ -1,6 +1,6 @@
 package com.ergizgizer.lasergame;
 
-interface MyConstants {
+interface MyStrings {
 
     String sOnAuthStateChangedSignedIn = "onAuthStateChanged:signed_in:";
     String sOnAuthStateChangedSignedOut = "onAuthStateChanged:signed_out";
@@ -20,4 +20,8 @@ interface MyConstants {
 
     String sSignInWithCredentialSuccess = "signInWithCredential:success";
     String sSignInWithCredentialFailure = "signInWithCredential:failure";
+
+    String sSquareClicked = "squareClicked:";
+    String sRow = "row:";
+    String sColumn = "column:";
 }
