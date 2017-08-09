@@ -2,6 +2,8 @@ package com.ergizgizer.lasergame;
 
 public class Level {
 
+    private static final String TAG = "Level";
+
     private char[][] objectLayer = {
             {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
             {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
@@ -47,6 +49,14 @@ public class Level {
         this.numberOfAllowedMirrors = numberOfAllowedMirrors;
     }
 
+    public void incrementNumberOfMirrors() {
+        numberOfMirrors++;
+    }
+
+    public void decrementNumberOfMirrors() {
+        numberOfMirrors--;
+    }
+
     public void initLevel() {
 
         for (int i = 0; i < objectLayer.length; i++) {
@@ -78,7 +88,7 @@ public class Level {
         }
     }
 
-    private void printLevel() {
+    public void printLevel() {
         System.out.println("---------------------");
         for (int i = 0; i < objectLayer.length; i++) {
             for (int j = 0; j < objectLayer[i].length; j++) {
