@@ -5,11 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-public class MainActivity extends AppCompatActivity implements MyStrings, BoardFragment.BoardListener {
+public class MainActivity extends AppCompatActivity implements MyStrings, ChessBoard.BoardListener {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
-    private Board mBoard;
+    private BoardModel mBoardModel;
     private BoardFragment mBoardFragment;
 
     @Override
@@ -17,22 +17,21 @@ public class MainActivity extends AppCompatActivity implements MyStrings, BoardF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null)
-            mBoard = new Board();
+        mBoardModel = new BoardModel();
         updateBoard();
 
-    }
-
-    @Override
-    public void squareClicked(int row, int column) {
-        Log.d(TAG, sSquareClicked + "[" + sRow + row + "," + sColumn + column + "]");
-        updateBoard();
     }
 
     private void updateBoard() {
         mBoardFragment = new BoardFragment();
-        mBoardFragment.setmBoard(mBoard);
+        mBoardFragment.setmBoard(mBoardModel);
         FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.board_container, mBoardFragment);
         ft.commit();
+    }
+
+    @Override
+    public void tileClicked(int row, int col) {
+        Log.d(TAG, sSquareClicked + "[" + sRow + row + "," + sColumn + col + "]");
+        updateBoard();
     }
 }

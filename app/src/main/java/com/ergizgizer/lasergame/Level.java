@@ -2,7 +2,7 @@ package com.ergizgizer.lasergame;
 
 public class Level {
 
-    private static final String TAG = "Level";
+    private static final String TAG = Level.class.getSimpleName();
 
     private char[][] objectLayer = {
             {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
@@ -15,6 +15,7 @@ public class Level {
             {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
             {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'},
             {'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'}};
+
 
     private int numberOfAllowedMirrors;
     private int numberOfMirrors;
@@ -37,8 +38,8 @@ public class Level {
         return objectLayer;
     }
 
-    public void setObjectLayer(char[][] objectLayer) {
-        this.objectLayer = objectLayer;
+    public void setObjectLayer(char[][] blueprint) {
+        this.objectLayer = blueprint;
     }
 
     public int getNumberOfAllowedMirrors() {

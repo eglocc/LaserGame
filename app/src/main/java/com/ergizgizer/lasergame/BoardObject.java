@@ -1,48 +1,72 @@
 package com.ergizgizer.lasergame;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.util.Log;
+
 public abstract class BoardObject {
 
-    private int rowIndex;
-    private int columnIndex;
-    private int backgroundColorIndex;
-    private String code;
+	private static final String TAG = BoardObject.class.getSimpleName();
+
+	private final int mRowIndex;
+	private final int mColumnIndex;
+	private final String mCode;
+
+	private final Paint mBackgroundColor;
+	private Rect mRect;
+	private Bitmap mBitmap;
 
     public BoardObject(int rowIndex, int columnIndex) {
-        this.rowIndex = rowIndex;
-        this.columnIndex = columnIndex;
-        this.backgroundColorIndex = (rowIndex + columnIndex) % 2;
-        this.code = ("" + (char) ('A' + columnIndex) + (rowIndex + 1));
-    }
+		this.mRowIndex = rowIndex;
+		this.mColumnIndex = columnIndex;
+		this.mCode = ("" + (char) ('A' + mColumnIndex) + (mRowIndex + 1));
 
-    public int getRowIndex() {
-        return rowIndex;
-    }
+		this.mBackgroundColor = new Paint();
+		mBackgroundColor.setColor(isDark() ? Color.BLACK : Color.WHITE);
+	}
 
-    public void setRowIndex(int rowIndex) {
-        this.rowIndex = rowIndex;
-    }
+	public String getmCode() {
+		return mCode;
+	}
 
-    public int getColumnIndex() {
-        return columnIndex;
-    }
+	public boolean isDark() {
+		return (mRowIndex + mColumnIndex) % 2 == 0;
+	}
 
-    public void setColumnIndex(int columnIndex) {
-        this.columnIndex = columnIndex;
-    }
+	public Rect getmRect() {
+		return mRect;
+	}
 
-    public int getBackgroundColorIndex() {
-        return backgroundColorIndex;
-    }
+	public void setmRect(final Rect rect) {
+		this.mRect = rect;
+	}
 
-    public void setBackgroundColorIndex(int backgroundColorIndex) {
-        this.backgroundColorIndex = backgroundColorIndex;
-    }
+	public Bitmap getmBitmap() {
+		return mBitmap;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public void setmBitmap(final Bitmap bitmap) {
+		this.mBitmap = bitmap;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void draw(Context context, final Canvas canvas) {
+		canvas.drawRect(mRect, mBackgroundColor);
+	}
+
+	public boolean isTouched(int x, int y) {
+		return mRect.contains(x, y);
+	}
+
+	public void handleTouch() {
+		Log.d(TAG, "clicked:" + toString());
+	}
+
+	@Override
+	public String toString() {
+		return String.format("<%s : %d,%d>", getClass().getSimpleName(), mRowIndex, mColumnIndex);
+	}
 }
