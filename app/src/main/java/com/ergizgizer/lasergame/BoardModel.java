@@ -9,10 +9,12 @@ public class BoardModel {
 
     private BoardObject[][] mTiles;
     private Level mLevel;
+    private Laser mLaser;
 
     public BoardModel() {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = new Level();
+        mLaser = new Laser();
         initBoard();
     }
 
@@ -38,6 +40,14 @@ public class BoardModel {
         this.mLevel = level;
     }
 
+    public final Laser getLaser() {
+        return mLaser;
+    }
+
+    public void setLaser(Laser laser) {
+        this.mLaser = laser;
+    }
+
     public void initBoard() {
         for (int i = 0; i < mTiles.length; i++) {
             for (int j = 0; j < mTiles[i].length; j++) {
@@ -49,8 +59,6 @@ public class BoardModel {
                 } else {
                     mTiles[i][j] = new Air(i, j);
                 }
-
-
             }
         }
     }
