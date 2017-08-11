@@ -5,10 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 
-public abstract class BoardObject {
+public abstract class BoardObject extends RectF {
 
 	private static final String TAG = BoardObject.class.getSimpleName();
 
@@ -17,7 +17,6 @@ public abstract class BoardObject {
 	private final String mCode;
 
 	private final Paint mBackgroundColor;
-	private Rect mRect;
 	private Bitmap mBitmap;
 
     public BoardObject(int rowIndex, int columnIndex) {
@@ -29,6 +28,14 @@ public abstract class BoardObject {
 		mBackgroundColor.setColor(isDark() ? Color.BLACK : Color.WHITE);
 	}
 
+	public int getmRowIndex() {
+		return mRowIndex;
+	}
+
+	public int getmColumnIndex() {
+		return mColumnIndex;
+	}
+
 	public String getmCode() {
 		return mCode;
 	}
@@ -37,12 +44,8 @@ public abstract class BoardObject {
 		return (mRowIndex + mColumnIndex) % 2 == 0;
 	}
 
-	public Rect getmRect() {
-		return mRect;
-	}
-
-	public void setmRect(final Rect rect) {
-		this.mRect = rect;
+	public void setEdges(float left, float top, float right, float bottom) {
+		set(left, top, right, bottom);
 	}
 
 	public Bitmap getmBitmap() {
@@ -54,11 +57,11 @@ public abstract class BoardObject {
 	}
 
 	public void draw(Context context, final Canvas canvas) {
-		canvas.drawRect(mRect, mBackgroundColor);
+		canvas.drawRect(this, mBackgroundColor);
 	}
 
 	public boolean isTouched(int x, int y) {
-		return mRect.contains(x, y);
+		return this.contains(x, y);
 	}
 
 	public void handleTouch() {

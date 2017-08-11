@@ -9,12 +9,10 @@ public class BoardModel {
 
     private BoardObject[][] mTiles;
     private Level mLevel;
-    private Laser mLaser;
 
     public BoardModel() {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = new Level();
-        mLaser = new Laser();
         initBoard();
     }
 
@@ -38,14 +36,6 @@ public class BoardModel {
 
     public void setLevel(Level level) {
         this.mLevel = level;
-    }
-
-    public final Laser getLaser() {
-        return mLaser;
-    }
-
-    public void setLaser(Laser laser) {
-        this.mLaser = laser;
     }
 
     public void initBoard() {

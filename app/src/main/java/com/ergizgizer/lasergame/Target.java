@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 
 public class Target extends BoardObject {
 
@@ -15,9 +14,8 @@ public class Target extends BoardObject {
     @Override
     public void draw(Context context, final Canvas canvas) {
         super.draw(context, canvas);
-        setmBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.target));
-        Bitmap bitmap = getmBitmap();
-        Rect rect = getmRect();
-        canvas.drawBitmap(bitmap, rect.left, rect.top, null);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.target);
+        setmBitmap(bitmap);
+        canvas.drawBitmap(bitmap, this.left, this.top, null);
     }
 }

@@ -1,8 +1,10 @@
 package com.ergizgizer.lasergame;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 
 public class Laser {
 
@@ -44,7 +46,17 @@ public class Laser {
     }
 
     public void draw(Canvas canvas) {
-        //Path path = new Path();
-        //path.lineTo(.getmRect().centerY());
+        canvas.setBitmap(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
+        Path path = new Path();
+        if (start.getmColumnIndex() == 0)
+            path.moveTo(start.left, start.centerY());
+        else if (start.getmColumnIndex() == 9)
+            path.moveTo(start.right, start.centerY());
+        else if (start.getmRowIndex() == 0)
+            path.moveTo(start.top, start.centerX());
+        else if (start.getmRowIndex() == 9)
+            path.moveTo(start.bottom, start.centerX());
+        path.lineTo(start.centerX(), start.centerY());
+        canvas.drawPath(path, color);
     }
 }

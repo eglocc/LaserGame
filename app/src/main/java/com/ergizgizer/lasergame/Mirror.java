@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 
 public class Mirror extends BoardObject {
 
@@ -18,10 +17,9 @@ public class Mirror extends BoardObject {
     @Override
     public void draw(Context context, final Canvas canvas) {
         super.draw(context, canvas);
-        setmBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.satellite0));
-        Bitmap bitmap = getmBitmap();
-        Rect rect = getmRect();
-        canvas.drawBitmap(bitmap, rect.left, rect.top, null);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.satellite0);
+        setmBitmap(bitmap);
+        canvas.drawBitmap(bitmap, this.left, this.top, null);
     }
 
     public int getAngle() {
