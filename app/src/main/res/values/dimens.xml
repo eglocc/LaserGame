@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="board_width">50px</dimen>
-    <dimen name="board_height">50px</dimen>
+    <dimen name="margin_from_sides">8dp</dimen>
+
 </resources>

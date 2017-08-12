@@ -4,27 +4,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/laser_angle_panel"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_from_sides">
 
         <TextView
+            android:id="@+id/laser_angle_indicator"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Laser Angle: "
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_from_sides"
             android:gravity="center"
+            android:text="@string/laser_angle_indicator"
             android:fontFamily="sans-serif-medium" />
 
         <SeekBar
-            android:id="@+id/angle_slider"
+            android:id="@+id/laser_angle_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="30dp"
             android:maxHeight="50dp"
-            android:thumbTint="@color/laser_red" />
+            android:thumbTint="@color/laser_red"
+            android:progress="90"
+            android:max="180"
+            android:layout_below="@id/laser_angle_indicator" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/laser_angle_in_degrees"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="4dp"
+            android:text="90°"
+            android:gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:layout_toRightOf="@id/laser_angle_indicator" />
+
+    </RelativeLayout>
 
 
     <FrameLayout
