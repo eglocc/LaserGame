@@ -22,6 +22,7 @@ interface MyStrings {
     String sSignInWithCredentialFailure = "signInWithCredential:failure";
 
     String sSquareClicked = "squareClicked:";
+    String sLaserRequested = "laserRequested:";
     String sRow = "row:";
     String sColumn = "column:";
 }

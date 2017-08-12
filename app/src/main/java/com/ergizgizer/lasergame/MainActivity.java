@@ -30,8 +30,33 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
     }
 
     @Override
-    public void tileClicked(int row, int col) {
+    public void putMirror(int row, int col) {
         Log.d(TAG, sSquareClicked + "[" + sRow + row + "," + sColumn + col + "]");
+        mBoardModel.putMirror(row, col);
+        updateBoard();
+    }
+
+    @Override
+    public void pickMirror(int row, int col) {
+        Log.d(TAG, sSquareClicked + "[" + sRow + row + "," + sColumn + col + "]");
+        mBoardModel.pickMirror(row, col);
+        updateBoard();
+    }
+
+    @Override
+    public void requestForLaser(int row, int col, int x0, int y0, int x1, int y1) {
+        Log.d(TAG, sLaserRequested + "[" + sRow + row + "," + sColumn + col + "]");
+        Laser laser = mBoardModel.getmLaser();
+        boolean wasOn = laser.isOn();
+        if (!wasOn) {
+            BoardObject sourceTile = mBoardModel.getObjects()[row][col];
+            Log.d(TAG, sourceTile.toString());
+            laser.setmSourceTile(sourceTile);
+            laser.initLaser(x0, x1, y0, y1);
+        } else {
+            mBoardModel.setmLaser(new Laser());
+        }
+        laser.setOn(!wasOn);
         updateBoard();
     }
 }

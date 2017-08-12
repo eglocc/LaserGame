@@ -11,7 +11,6 @@ public class Mirror extends BoardObject {
 
     public Mirror(int rowIndex, int columnIndex) {
         super(rowIndex, columnIndex);
-        setmBitmap(BitmapFactory.decodeFile("app\\src\\main\\res\\drawable-mdpi\\satellite0.png"));
     }
 
     @Override
@@ -29,12 +28,4 @@ public class Mirror extends BoardObject {
     public void setAngle(int angle) {
         this.angle = angle;
     }
-
-    /*
-    @Override
-    public void draw(final Canvas canvas){
-        super.draw(canvas);
-        canvas.drawBitmap(mBitmap, mRect.left, mRect.top,null);
-    }
-    */
 }

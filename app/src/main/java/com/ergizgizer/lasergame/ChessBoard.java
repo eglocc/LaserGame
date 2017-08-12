@@ -14,29 +14,32 @@ public class ChessBoard extends View {
     private static final String TAG = ChessBoard.class.getSimpleName();
 
     interface BoardListener {
-        void tileClicked(int row, int col);
+        void putMirror(int row, int col);
+
+        void pickMirror(int row, int col);
+
+        void requestForLaser(int row, int col, int x0, int y0, int x1, int y1);
     }
 
     private Context mContext;
     private BoardModel mBoardModel;
     private BoardListener mListener;
-    private int x0 = 0;
-    private int y0 = 0;
+    private static final int x1 = 0;
+    private static final int y1 = 0;
+    private static int x2;
+    private static int y2;
     private int mTileSize;
-    private Laser laser;
 
     public ChessBoard(Context context) {
         super(context);
         this.mContext = context;
         this.mListener = (BoardListener) context;
-        laser = new Laser();
     }
 
     public ChessBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
         this.mListener = (BoardListener) context;
-        laser = new Laser();
     }
 
     public void setmBoardModel(BoardModel model) {
@@ -46,21 +49,13 @@ public class ChessBoard extends View {
     @Override
     protected void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
-        final int width = getWidth();
-        final int height = getHeight();
-        mTileSize = Math.min(getTileSizeWidth(width), getTileSizeHeight(height));
-
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                final int xCoord = getXCoord(col);
-                final int yCoord = getYCoord(row);
-                BoardObject obj = mBoardModel.getObjects()[row][col];
-                obj.setEdges(xCoord, yCoord, xCoord + mTileSize, yCoord + mTileSize);
-                obj.draw(mContext, canvas);
-            }
-        }
-        if (laser.isOn())
-            laser.draw(canvas);
+        mTileSize = Math.min(getTileSizeWidth(), getTileSizeHeight());
+        x2 = mTileSize * COLS;
+        y2 = mTileSize * ROWS;
+        mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
+        Laser laser = mBoardModel.getmLaser();
+        if (laser != null && laser.isOn())
+            canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.mColor);
     }
 
     @Override
@@ -71,40 +66,27 @@ public class ChessBoard extends View {
         final int col = x / mTileSize;
         final int row = y / mTileSize;
 
-        Level level = mBoardModel.getLevel();
+        Level level = mBoardModel.getmLevel();
         char symbols[][] = level.getObjectLayer();
-        if (symbols[row][col] == 'B' && level.getNumberOfMirrors() < level.getNumberOfAllowedMirrors())
-            mBoardModel.putMirror(row, col);
-        else if (symbols[row][col] == 'M')
-            mBoardModel.pickMirror(row, col);
-        else if ((row == 0 || row == 9 || col == 0 || col == 9)
-                && level.getNumberOfMirrors() == level.getNumberOfAllowedMirrors()) {
-            boolean wasOn = laser.isOn();
-            laser.setOn(!wasOn);
-            if (!wasOn) {
-                laser.setStart(mBoardModel.getObjects()[row][col]);
-            }
-        }
 
-        mListener.tileClicked(row, col);
+        if (symbols[row][col] == 'B' && level.getNumberOfMirrors() < level.getNumberOfAllowedMirrors()) {
+            mListener.putMirror(row, col);
+        } else if (symbols[row][col] == 'M') {
+            mListener.pickMirror(row, col);
+        } else if ((row == 0 || row == 9 || col == 0 || col == 9)
+                && level.getNumberOfMirrors() == level.getNumberOfAllowedMirrors()) {
+            mListener.requestForLaser(row, col, x1, y1, x2, y2);
+        }
 
         return super.onTouchEvent(event);
     }
 
-    private int getTileSizeWidth(int width) {
-        return width / COLS;
+    private int getTileSizeWidth() {
+        return getWidth() / COLS;
     }
 
-    private int getTileSizeHeight(int height) {
-        return height / ROWS;
-    }
-
-    private int getXCoord(final int col) {
-        return x0 + mTileSize * col;
-    }
-
-    private int getYCoord(final int row) {
-        return y0 + mTileSize * row;
+    private int getTileSizeHeight() {
+        return getHeight() / ROWS;
     }
 
 
