@@ -6,4 +6,7 @@
     <string name="auth_failed">Authentication Failed!</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+
+    <string name="laser_angle_indicator">Laser Angle: </string>
+    <string name="mirror_angle_indicator">Mirror Angle: </string>
 </resources>

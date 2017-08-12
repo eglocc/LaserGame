@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ergiz Gizer"
-        android:textSize="25sp" />
+    <LinearLayout
+        android:id="@+id/laser_angle_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Laser Angle: "
+            android:gravity="center"
+            android:fontFamily="sans-serif-medium" />
+
+        <SeekBar
+            android:id="@+id/angle_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="30dp"
+            android:maxHeight="50dp"
+            android:thumbTint="@color/laser_red" />
+
+    </LinearLayout>
+
 
     <FrameLayout
         android:id="@+id/board_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/name" />
+        android:layout_below="@id/laser_angle_panel" />
 
-</RelativeLayout>
+</LinearLayout>

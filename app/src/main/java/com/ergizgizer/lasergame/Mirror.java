@@ -16,7 +16,7 @@ public class Mirror extends BoardObject {
     @Override
     public void draw(Context context, final Canvas canvas) {
         super.draw(context, canvas);
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.satellite0);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.s72);
         setmBitmap(bitmap);
         canvas.drawBitmap(bitmap, this.left, this.top, null);
     }

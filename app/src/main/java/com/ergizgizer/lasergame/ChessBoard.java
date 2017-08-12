@@ -55,7 +55,7 @@ public class ChessBoard extends View {
         mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
         Laser laser = mBoardModel.getmLaser();
         if (laser != null && laser.isOn())
-            canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.mColor);
+            canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.getmBeam());
     }
 
     @Override

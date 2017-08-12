@@ -14,7 +14,7 @@ public class Target extends BoardObject {
     @Override
     public void draw(Context context, final Canvas canvas) {
         super.draw(context, canvas);
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.target);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.t72);
         setmBitmap(bitmap);
         canvas.drawBitmap(bitmap, this.left, this.top, null);
     }

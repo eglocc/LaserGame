@@ -18,14 +18,14 @@ public class BoardModel {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = new Level();
         initBoard();
-        mLaser = new Laser();
+        mLaser = new Laser(mTiles);
     }
 
     public BoardModel(Level level) {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = level;
         initBoard();
-        mLaser = new Laser();
+        mLaser = new Laser(mTiles);
     }
 
     public BoardObject[][] getObjects() {

@@ -49,12 +49,10 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
         Laser laser = mBoardModel.getmLaser();
         boolean wasOn = laser.isOn();
         if (!wasOn) {
-            BoardObject sourceTile = mBoardModel.getObjects()[row][col];
-            Log.d(TAG, sourceTile.toString());
-            laser.setmSourceTile(sourceTile);
+            laser.setmSourceTile(row, col);
             laser.initLaser(x0, x1, y0, y1);
         } else {
-            mBoardModel.setmLaser(new Laser());
+            mBoardModel.setmLaser(new Laser(mBoardModel.getObjects()));
         }
         laser.setOn(!wasOn);
         updateBoard();

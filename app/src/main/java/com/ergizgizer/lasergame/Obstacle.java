@@ -14,7 +14,7 @@ public class Obstacle extends BoardObject {
     @Override
     public void draw(Context context, final Canvas canvas) {
         super.draw(context, canvas);
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstacle);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.p72);
         setmBitmap(bitmap);
         canvas.drawBitmap(bitmap, this.left, this.top, null);
     }
