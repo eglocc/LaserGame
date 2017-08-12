@@ -11,43 +11,25 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private SeekBar mLaserAngleSlider;
+    private AngleSlider mLaserAngleListener;
+
+    private SeekBar mLaserAngleSeekBar;
+    private TextView angleInDegrees;
 
     private BoardModel mBoardModel;
     private BoardFragment mBoardFragment;
-    private int mAngle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mLaserAngleSlider = (SeekBar) findViewById(R.id.laser_angle_slider);
+        mLaserAngleSeekBar = (SeekBar) findViewById(R.id.laser_angle_slider);
+        angleInDegrees = (TextView) findViewById(R.id.laser_angle_in_degrees);
 
         mBoardModel = new BoardModel();
-
-        mLaserAngleSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            TextView angleInDegrees = (TextView) findViewById(R.id.laser_angle_in_degrees);
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    mAngle = progress;
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                angleInDegrees.setText(Integer.toString(mAngle) + "°");
-                mBoardModel.getmLaser().setmAngle(mAngle);
-            }
-        });
+        mLaserAngleListener = new AngleSlider(mBoardModel.getmLaser(), angleInDegrees);
+        mLaserAngleSeekBar.setOnSeekBarChangeListener(mLaserAngleListener);
 
         updateBoard();
 
@@ -81,10 +63,11 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
         boolean wasOn = laser.isOn();
         if (!wasOn) {
             laser.setmSourceTile(row, col);
+            laser.setmAngle(mLaserAngleListener.getmAngle());
             laser.initLaser(x0, x1, y0, y1);
         } else {
             Laser newLaser = new Laser(mBoardModel.getObjects());
-            newLaser.setmAngle(mAngle);
+            newLaser.setmAngle(mLaserAngleListener.getmAngle());
             mBoardModel.setmLaser(newLaser);
         }
         laser.setOn(!wasOn);

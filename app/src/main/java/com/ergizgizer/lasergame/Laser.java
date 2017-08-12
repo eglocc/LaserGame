@@ -28,7 +28,6 @@ public class Laser {
 
 
     public Laser(BoardObject[][] tiles) {
-        mAngle = 90;
         mBeam = new Paint();
         mBeam.setAntiAlias(true);
         mBeam.setStrokeWidth(3F);
