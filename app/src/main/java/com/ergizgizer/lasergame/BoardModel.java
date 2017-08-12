@@ -2,8 +2,10 @@ package com.ergizgizer.lasergame;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.Log;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Stack;
 
 public class BoardModel {
 
@@ -15,13 +17,16 @@ public class BoardModel {
     private BoardObject[][] mTiles;
     private Level mLevel;
     private Laser mLaser;
-    private ArrayList<Mirror> mMirrors;
+    private Mirror[] mMirrors;
+    private Stack<Integer> mMirrorBackStack;
 
     public BoardModel() {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = new Level();
         initBoard();
         mLaser = new Laser(mTiles);
+        mMirrors = new Mirror[mLevel.getNumberOfAllowedMirrors()];
+        mMirrorBackStack = new Stack<>();
     }
 
     public BoardModel(Level level) {
@@ -29,7 +34,8 @@ public class BoardModel {
         this.mLevel = level;
         initBoard();
         mLaser = new Laser(mTiles);
-        mMirrors = new ArrayList<>();
+        mMirrors = new Mirror[mLevel.getNumberOfAllowedMirrors()];
+        mMirrorBackStack = new Stack<>();
     }
 
     public BoardObject[][] getObjects() {
@@ -38,6 +44,14 @@ public class BoardModel {
 
     public void setObjects(BoardObject[][] tiles) {
         this.mTiles = tiles;
+    }
+
+    public Mirror[] getmMirrors() {
+        return mMirrors;
+    }
+
+    public void setmMirrors(Mirror[] mirrors) {
+        this.mMirrors = mirrors;
     }
 
     public final Level getmLevel() {
@@ -71,16 +85,33 @@ public class BoardModel {
         }
     }
 
-    public void putMirror(int r, int c) {
+    public Mirror putMirror(int r, int c) {
         mLevel.putMirror(r, c);
-        Mirror mirror = new Mirror(r, c);
-        mTiles[r][c] = mirror;
-        mMirrors.add(mirror);
+        if (mMirrorBackStack.empty()) {
+            mTiles[r][c] = new Mirror(r, c, mLevel.getNumberOfMirrors());
+        } else {
+            mTiles[r][c] = new Mirror(r, c, mMirrorBackStack.pop());
+        }
+        Mirror mirror = (Mirror) mTiles[r][c];
+        mMirrors[mirror.getmId() - 1] = mirror;
+
+
+        Log.d(TAG, mMirrorBackStack.toString());
+        Log.d(TAG, Arrays.toString(mMirrors));
+        return (Mirror) mTiles[r][c];
     }
 
-    public void pickMirror(int r, int c) {
+    public Mirror pickMirror(int r, int c) {
         mLevel.pickMirror(r, c);
+        Mirror mirror = (Mirror) mTiles[r][c];
+        int id = mirror.getmId();
+        mMirrorBackStack.push(id);
+        mMirrors[id - 1] = null;
         mTiles[r][c] = new Air(r, c);
+
+        Log.d(TAG, mMirrorBackStack.toString());
+        Log.d(TAG, Arrays.toString(mMirrors));
+        return mirror;
     }
 
     public void drawBoard(Context context, Canvas canvas, int tileSize, int offsetX, int offsetY) {

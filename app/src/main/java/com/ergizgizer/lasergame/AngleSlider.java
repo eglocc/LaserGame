@@ -7,13 +7,14 @@ public class AngleSlider implements SeekBar.OnSeekBarChangeListener {
 
     private LaserAngleFragment.LaserAngleListener mListener;
     private Laser mLaser;
-    private int mAngle = 90;
+    private int mAngle;
     private TextView mAngleText;
 
-    public AngleSlider(Object object, TextView tv, LaserAngleFragment.LaserAngleListener laserAngleListener) {
+    public AngleSlider(Rotatable object, TextView tv, LaserAngleFragment.LaserAngleListener laserAngleListener) {
         this.mLaser = (Laser) object;
         this.mAngleText = tv;
         this.mListener = laserAngleListener;
+        this.mAngle = object.getmAngle();
     }
 
     //public void setmAngle(int angle) { this.mAngle = angle; }
@@ -33,6 +34,6 @@ public class AngleSlider implements SeekBar.OnSeekBarChangeListener {
     public void onStopTrackingTouch(SeekBar seekBar) {
         mAngleText.setText(Integer.toString(mAngle) + "°");
         //mLaser.setmAngle(mAngle);
-        mListener.angleChanged(mAngle);
+        mListener.laserAngleChanged(mAngle);
     }
 }

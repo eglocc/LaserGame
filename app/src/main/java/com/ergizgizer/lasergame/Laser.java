@@ -8,7 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-public class Laser {
+public class Laser implements Rotatable {
 
     private static final String TAG = Laser.class.getSimpleName();
 
@@ -46,10 +46,12 @@ public class Laser {
         this.mBeam = beam;
     }
 
+    @Override
     public int getmAngle() {
         return mAngle;
     }
 
+    @Override
     public void setmAngle(int angle) {
         this.mAngle = angle;
     }

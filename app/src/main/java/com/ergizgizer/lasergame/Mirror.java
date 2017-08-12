@@ -5,12 +5,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
-public class Mirror extends BoardObject {
+public class Mirror extends BoardObject implements Rotatable {
 
-    private int angle;
+    private int mAngle;
+    private int mId;
 
-    public Mirror(int rowIndex, int columnIndex) {
+    public Mirror(int rowIndex, int columnIndex, int id) {
         super(rowIndex, columnIndex);
+        this.mId = id;
     }
 
     @Override
@@ -21,11 +23,19 @@ public class Mirror extends BoardObject {
         canvas.drawBitmap(bitmap, this.left, this.top, null);
     }
 
-    public int getAngle() {
-        return angle;
+    public int getmId() {
+        return mId;
     }
 
-    public void setAngle(int angle) {
-        this.angle = angle;
+    public void setmId(int id) {
+        this.mId = id;
+    }
+
+    public int getmAngle() {
+        return mAngle;
+    }
+
+    public void setmAngle(int angle) {
+        this.mAngle = angle;
     }
 }

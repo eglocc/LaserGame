@@ -11,14 +11,16 @@ import android.widget.TextView;
 
 public class MirrorAngleFragment extends Fragment {
 
+    //interface MirrorAngleListener
 
     private SeekBar mMirrorAngleSeekBar;
     private TextView mAngleInDegrees;
 
-    private BoardModel mBoardModel;
+    private Mirror mMirror;
+    private int mId;
 
-    public void setmBoardModel(BoardModel model) {
-        this.mBoardModel = model;
+    public void setmMirror(Mirror mirror) {
+        this.mMirror = mirror;
     }
 
     @Nullable
@@ -33,6 +35,6 @@ public class MirrorAngleFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //AngleSlider = new AngleSlider()
+        //AngleSlider angleSlider = new AngleSlider(mMirror, mAngleInDegrees)
     }
 }
