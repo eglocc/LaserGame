@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/laser_angle_panel"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/mirror_angle_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_from_sides"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:text="@string/mirror_angle_indicator" />
+
+    <SeekBar
+        android:id="@+id/mirror_angle_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mirror_angle_indicator"
+        android:max="180"
+        android:maxHeight="50dp"
+        android:minHeight="30dp"
+        android:progress="0"
+        android:thumbTint="@android:color/holo_blue_light" />
+
+    <TextView
+        android:id="@+id/mirror_angle_in_degrees"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/mirror_angle_indicator"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:paddingLeft="4dp"
+        android:text="0°" />
+
+</RelativeLayout>

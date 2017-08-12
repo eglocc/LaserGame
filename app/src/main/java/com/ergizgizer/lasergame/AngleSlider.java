@@ -5,17 +5,15 @@ import android.widget.TextView;
 
 public class AngleSlider implements SeekBar.OnSeekBarChangeListener {
 
+    private LaserAngleFragment.LaserAngleListener mListener;
     private Laser mLaser;
     private int mAngle = 90;
     private TextView mAngleText;
 
-    public AngleSlider(Laser laser, TextView tv) {
-        this.mLaser = laser;
+    public AngleSlider(Object object, TextView tv, LaserAngleFragment.LaserAngleListener laserAngleListener) {
+        this.mLaser = (Laser) object;
         this.mAngleText = tv;
-    }
-
-    public int getmAngle() {
-        return mAngle;
+        this.mListener = laserAngleListener;
     }
 
     //public void setmAngle(int angle) { this.mAngle = angle; }
@@ -34,6 +32,7 @@ public class AngleSlider implements SeekBar.OnSeekBarChangeListener {
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         mAngleText.setText(Integer.toString(mAngle) + "°");
-        mLaser.setmAngle(mAngle);
+        //mLaser.setmAngle(mAngle);
+        mListener.angleChanged(mAngle);
     }
 }

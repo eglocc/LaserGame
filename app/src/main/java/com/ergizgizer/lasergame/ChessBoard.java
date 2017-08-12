@@ -23,7 +23,7 @@ public class ChessBoard extends View {
 
     private Context mContext;
     private BoardModel mBoardModel;
-    private BoardListener mListener;
+    private BoardListener mController;
     private static final int x1 = 0;
     private static final int y1 = 0;
     private static int x2;
@@ -33,13 +33,13 @@ public class ChessBoard extends View {
     public ChessBoard(Context context) {
         super(context);
         this.mContext = context;
-        this.mListener = (BoardListener) context;
+        this.mController = (BoardListener) context;
     }
 
     public ChessBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
-        this.mListener = (BoardListener) context;
+        this.mController = (BoardListener) context;
     }
 
     public void setmBoardModel(BoardModel model) {
@@ -70,12 +70,12 @@ public class ChessBoard extends View {
         char symbols[][] = level.getObjectLayer();
 
         if (symbols[row][col] == 'B' && level.getNumberOfMirrors() < level.getNumberOfAllowedMirrors()) {
-            mListener.putMirror(row, col);
+            mController.putMirror(row, col);
         } else if (symbols[row][col] == 'M') {
-            mListener.pickMirror(row, col);
+            mController.pickMirror(row, col);
         } else if ((row == 0 || row == 9 || col == 0 || col == 9)
                 && level.getNumberOfMirrors() == level.getNumberOfAllowedMirrors()) {
-            mListener.requestForLaser(row, col, x1, y1, x2, y2);
+            mController.requestForLaser(row, col, x1, y1, x2, y2);
         }
 
         return super.onTouchEvent(event);

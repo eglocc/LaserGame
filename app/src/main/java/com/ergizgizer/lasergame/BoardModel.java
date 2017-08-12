@@ -3,6 +3,8 @@ package com.ergizgizer.lasergame;
 import android.content.Context;
 import android.graphics.Canvas;
 
+import java.util.ArrayList;
+
 public class BoardModel {
 
     private static final String TAG = BoardModel.class.getSimpleName();
@@ -13,6 +15,7 @@ public class BoardModel {
     private BoardObject[][] mTiles;
     private Level mLevel;
     private Laser mLaser;
+    private ArrayList<Mirror> mMirrors;
 
     public BoardModel() {
         this.mTiles = new BoardObject[ROWS][COLS];
@@ -26,6 +29,7 @@ public class BoardModel {
         this.mLevel = level;
         initBoard();
         mLaser = new Laser(mTiles);
+        mMirrors = new ArrayList<>();
     }
 
     public BoardObject[][] getObjects() {
@@ -69,7 +73,9 @@ public class BoardModel {
 
     public void putMirror(int r, int c) {
         mLevel.putMirror(r, c);
-        mTiles[r][c] = new Mirror(r, c);
+        Mirror mirror = new Mirror(r, c);
+        mTiles[r][c] = mirror;
+        mMirrors.add(mirror);
     }
 
     public void pickMirror(int r, int c) {
