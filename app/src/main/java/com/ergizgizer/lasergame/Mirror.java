@@ -20,6 +20,7 @@ public class Mirror extends BoardObject implements Rotatable {
         super.draw(context, canvas);
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.s72);
         setmBitmap(bitmap);
+        canvas.rotate(mAngle);
         canvas.drawBitmap(bitmap, this.left, this.top, null);
     }
 

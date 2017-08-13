@@ -4,9 +4,8 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 
-public class MainActivity extends AppCompatActivity implements MyStrings, ChessBoard.BoardListener, LaserAngleFragment.LaserAngleListener {
+public class MainActivity extends AppCompatActivity implements MyStrings, ChessBoard.BoardListener, AngleListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -35,52 +34,33 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
         ft.commit();
     }
 
-    private void putMirrorPanel(Mirror mirror) {
+    private void putMirrorPanel(Mirror[] mirrors) {
         MirrorAngleFragment mirrorAngleFragment = new MirrorAngleFragment();
-        mirrorAngleFragment.setmMirror(mirror);
+        mirrorAngleFragment.setmMirror(mirrors);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        switch (mirror.getmId()) {
-            case 1:
-                ft.replace(R.id.mirror_1_slider, mirrorAngleFragment);
-                break;
-            case 2:
-                ft.replace(R.id.mirror_2_slider, mirrorAngleFragment);
-                break;
-            case 3:
-                ft.replace(R.id.mirror_3_slider, mirrorAngleFragment);
-                break;
-            default:
-                Log.d(TAG, "Ooops! I think something's wrong!");
-        }
+        ft.replace(R.id.mirror_panel_container, mirrorAngleFragment, MirrorAngleFragment.TAG);
         ft.commit();
     }
 
-    private void removeMirrorPanel(Mirror mirror) {
-        View mirrorPanel = null;
-        switch (mirror.getmId()) {
-            case 1:
-                mirrorPanel = findViewById(R.id.mirror_1_slider);
-                break;
-            case 2:
-                mirrorPanel = findViewById(R.id.mirror_2_slider);
-                break;
-            case 3:
-                mirrorPanel = findViewById(R.id.mirror_3_slider);
-                break;
-            default:
-                Log.d(TAG, "Ooops! I think something's wrong!");
+    private void removeMirrorPanel() {
+        MirrorAngleFragment remove = (MirrorAngleFragment) getFragmentManager().findFragmentByTag(MirrorAngleFragment.TAG);
+        if (remove != null) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction().remove(remove);
+            ft.commit();
         }
-
-        if (mirrorPanel != null)
-            mirrorPanel.setVisibility(View.GONE);
     }
 
     @Override
     public void putMirror(int row, int col) {
         Log.d(TAG, sSquareClicked + "[" + sRow + row + "," + sColumn + col + "]");
-        Mirror mirror = mBoardModel.putMirror(row, col);
+        mBoardModel.putMirror(row, col);
         updateBoard();
-        //putMirrorPanel(mirror);
+        int no = mBoardModel.getmLevel().getNumberOfMirrors();
+        boolean b = mBoardModel.getmLevel().isAllMirrorsDeployed();
+        if (mBoardModel.getmLevel().isAllMirrorsDeployed()) {
+            Mirror[] mirrors = mBoardModel.getmMirrors();
+            putMirrorPanel(mirrors);
+        }
     }
 
     @Override
@@ -88,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
         Log.d(TAG, sSquareClicked + "[" + sRow + row + "," + sColumn + col + "]");
         Mirror mirror = mBoardModel.pickMirror(row, col);
         updateBoard();
-        //removeMirrorPanel();
+        removeMirrorPanel();
     }
 
     @Override
@@ -112,5 +92,11 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
     @Override
     public void laserAngleChanged(int angle) {
         mCurrentLaserAngle = angle;
+    }
+
+    @Override
+    public void mirrorAngleChanged(int id, int angle) {
+        Mirror mirror = mBoardModel.getmMirrors()[id];
+        mirror.setmAngle(angle);
     }
 }

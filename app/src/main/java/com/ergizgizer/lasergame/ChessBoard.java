@@ -1,6 +1,7 @@
 package com.ergizgizer.lasergame;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -26,8 +27,8 @@ public class ChessBoard extends View {
     private BoardListener mController;
     private static final int x1 = 0;
     private static final int y1 = 0;
-    private static int x2;
-    private static int y2;
+    private int x2;
+    private int y2;
     private int mTileSize;
 
     public ChessBoard(Context context) {
@@ -47,9 +48,15 @@ public class ChessBoard extends View {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
     protected void onDraw(final Canvas canvas) {
-        super.onDraw(canvas);
-        mTileSize = Math.min(getTileSizeWidth(), getTileSizeHeight());
+        final int width = getWidth();
+        final int height = getHeight();
+        mTileSize = Math.min(getTileSizeWidth(width), getTileSizeHeight(height));
         x2 = mTileSize * COLS;
         y2 = mTileSize * ROWS;
         mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
@@ -69,25 +76,32 @@ public class ChessBoard extends View {
         Level level = mBoardModel.getmLevel();
         char symbols[][] = level.getObjectLayer();
 
-        if (symbols[row][col] == 'B' && level.getNumberOfMirrors() < level.getNumberOfAllowedMirrors()) {
+        if (symbols[row][col] == 'B' && !level.isAllMirrorsDeployed()) {
             mController.putMirror(row, col);
         } else if (symbols[row][col] == 'M') {
             mController.pickMirror(row, col);
         } else if ((row == 0 || row == 9 || col == 0 || col == 9)
-                && level.getNumberOfMirrors() == level.getNumberOfAllowedMirrors()) {
+                && level.isAllMirrorsDeployed()) {
             mController.requestForLaser(row, col, x1, y1, x2, y2);
         }
 
         return super.onTouchEvent(event);
     }
 
-    private int getTileSizeWidth() {
-        return getWidth() / COLS;
+    private int getTileSizeWidth(int width) {
+        return width / COLS;
     }
 
-    private int getTileSizeHeight() {
-        return getHeight() / ROWS;
+    private int getTileSizeHeight(int height) {
+        return height / ROWS;
     }
 
+    private static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    private static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
 
 }

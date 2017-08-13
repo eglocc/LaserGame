@@ -12,13 +12,9 @@ import android.widget.TextView;
 
 public class LaserAngleFragment extends Fragment {
 
-    interface LaserAngleListener {
-        void laserAngleChanged(int angle);
-    }
-
 
     private Context mContext;
-    private LaserAngleListener mMainListener;
+    private AngleListener mController;
 
     private SeekBar mLaserAngleSeekBar;
     private TextView mAngleInDegrees;
@@ -33,7 +29,7 @@ public class LaserAngleFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
-        mMainListener = (LaserAngleListener) mContext;
+        mController = (AngleListener) mContext;
     }
 
     @Nullable
@@ -48,7 +44,7 @@ public class LaserAngleFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        AngleSlider angleSlider = new AngleSlider(mLaser, mAngleInDegrees, mMainListener);
+        AngleSlider angleSlider = new AngleSlider(mLaser, mAngleInDegrees, mController);
         mLaserAngleSeekBar.setOnSeekBarChangeListener(angleSlider);
     }
 }

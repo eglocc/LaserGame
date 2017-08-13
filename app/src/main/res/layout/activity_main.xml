@@ -1,35 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <fragment
-        class="com.ergizgizer.lasergame.LaserAngleFragment"
         android:id="@+id/laser_angle_fragment"
+        class="com.ergizgizer.lasergame.LaserAngleFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_from_sides" />
-
 
     <FrameLayout
         android:id="@+id/board_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <FrameLayout
-        android:id="@+id/mirror_1_slider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></FrameLayout>
 
     <FrameLayout
-        android:id="@+id/mirror_2_slider"
+        android:id="@+id/mirror_panel_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/mirror_3_slider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_from_sides"
+        android:layout_marginTop="@dimen/margin_from_sides" />
 
 </LinearLayout>

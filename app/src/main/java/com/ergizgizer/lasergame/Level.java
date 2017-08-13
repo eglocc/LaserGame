@@ -19,6 +19,7 @@ public class Level {
 
     private int numberOfAllowedMirrors;
     private int numberOfMirrors;
+    private boolean allMirrorsDeployed;
 
     public Level() {
         numberOfAllowedMirrors = 3;
@@ -58,6 +59,14 @@ public class Level {
         numberOfMirrors--;
     }
 
+    public boolean isAllMirrorsDeployed() {
+        return allMirrorsDeployed;
+    }
+
+    public void setAllMirrorsDeployed(boolean all) {
+        this.allMirrorsDeployed = all;
+    }
+
     public void initLevel() {
 
         for (int i = 0; i < objectLayer.length; i++) {
@@ -77,6 +86,8 @@ public class Level {
             blockColumn(c);
             objectLayer[r][c] = 'M';
         }
+        if (numberOfMirrors == numberOfAllowedMirrors)
+            allMirrorsDeployed = true;
     }
 
     public void pickMirror(int r, int c) {
@@ -87,6 +98,7 @@ public class Level {
             objectLayer[r][c] = 'B';
             initLevel();
         }
+        allMirrorsDeployed = false;
     }
 
     public void printLevel() {

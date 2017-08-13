@@ -87,11 +87,12 @@ public class BoardModel {
 
     public Mirror putMirror(int r, int c) {
         mLevel.putMirror(r, c);
-        if (mMirrorBackStack.empty()) {
+
+        if (mMirrorBackStack.empty())
             mTiles[r][c] = new Mirror(r, c, mLevel.getNumberOfMirrors());
-        } else {
+        else
             mTiles[r][c] = new Mirror(r, c, mMirrorBackStack.pop());
-        }
+
         Mirror mirror = (Mirror) mTiles[r][c];
         mMirrors[mirror.getmId() - 1] = mirror;
 
@@ -103,10 +104,12 @@ public class BoardModel {
 
     public Mirror pickMirror(int r, int c) {
         mLevel.pickMirror(r, c);
+
         Mirror mirror = (Mirror) mTiles[r][c];
         int id = mirror.getmId();
         mMirrorBackStack.push(id);
         mMirrors[id - 1] = null;
+
         mTiles[r][c] = new Air(r, c);
 
         Log.d(TAG, mMirrorBackStack.toString());
