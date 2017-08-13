@@ -7,14 +7,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-public class MainActivity extends AppCompatActivity implements MyStrings, ChessBoard.BoardListener, AngleListener {
+public class MainActivity extends AppCompatActivity implements MyStaticVariables, ChessBoard.BoardListener, AngleListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private BoardModel mBoardModel;
     private BoardFragment mBoardFragment;
     private LaserAngleFragment mLaserAngleFragment;
-    private int mCurrentLaserAngle;
+    private int mCurrentLaserAngle = sDefaultLaserAngle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,17 +76,17 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
     }
 
     @Override
-    public void requestForLaser(int row, int col, int x0, int y0, int x1, int y1) {
+    public void requestForLaser(int row, int col, float x0, float y0, float x1, float y1) {
         Log.d(TAG, sLaserRequested + "[" + sRow + row + "," + sColumn + col + "]");
         Laser laser = mBoardModel.getmLaser();
         boolean wasOn = laser.isOn();
         if (!wasOn) {
             laser.setmSourceTile(row, col);
-            laser.setmAngle(mCurrentLaserAngle);
+            laser.setAngle(mCurrentLaserAngle);
             laser.initLaser(x0, x1, y0, y1);
         } else {
             Laser newLaser = new Laser(mBoardModel.getObjects());
-            newLaser.setmAngle(mCurrentLaserAngle);
+            newLaser.setAngle(mCurrentLaserAngle);
             mBoardModel.setmLaser(newLaser);
         }
         laser.setOn(!wasOn);
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
     @Override
     public void mirrorAngleChanged(int id, int angle) {
         Mirror mirror = mBoardModel.getmMirrors()[id];
-        mirror.setmAngle(angle);
+        mirror.setAngle(angle);
         updateBoard();
     }
 }

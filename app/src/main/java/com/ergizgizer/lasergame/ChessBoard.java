@@ -1,7 +1,6 @@
 package com.ergizgizer.lasergame;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,17 +19,17 @@ public class ChessBoard extends View {
 
         void pickMirror(int row, int col);
 
-        void requestForLaser(int row, int col, int x0, int y0, int x1, int y1);
+        void requestForLaser(int row, int col, float x0, float y0, float x1, float y1);
     }
 
     private Context mContext;
     private BoardModel mBoardModel;
     private BoardListener mController;
-    private int x1;
-    private int y1;
-    private int x2;
-    private int y2;
-    private int mTileSize;
+    private static float x1;
+    private static float y1;
+    private static float x2;
+    private static float y2;
+    private float mTileSize;
 
     public ChessBoard(Context context) {
         super(context);
@@ -60,25 +59,32 @@ public class ChessBoard extends View {
         Log.d(TAG, MeasureSpec.toString(widthMeasureSpec));
         Log.d(TAG, MeasureSpec.toString(heightMeasureSpec));
         mTileSize = Math.min(getTileSizeWidth(), getTileSizeHeight());
-        Log.d(TAG, Integer.toString(mTileSize));
-        int width = mTileSize * COLS;
-        int height = mTileSize * ROWS;
+        Log.d(TAG, Float.toString(mTileSize));
+        float width = mTileSize * COLS;
+        float height = mTileSize * ROWS;
         x1 = (getMeasuredWidth() - width) / 2;
         y1 = 0;
         x2 = x1 + mTileSize * COLS;
         y2 = y1 + mTileSize * ROWS;
-
-
+        Log.d(TAG, "onMeasure:boardstartX:" + x1);
+        Log.d(TAG, "onMeasure:boardstartY:" + y1);
+        Log.d(TAG, "onMeasure:boardendX:" + x2);
+        Log.d(TAG, "onMeasure:boardendY:" + y2);
     }
 
     @Override
     protected void onDraw(final Canvas canvas) {
-        Log.d(TAG, Integer.toString(getWidth()));
-        Log.d(TAG, Integer.toString(getHeight()));
+        //Log.d(TAG, Integer.toString(getWidth()));
+        //Log.d(TAG, Integer.toString(getHeight()));
         mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
         Laser laser = mBoardModel.getmLaser();
-        if (laser != null && laser.isOn())
+        if (laser != null && laser.isOn()) {
+            Log.d(TAG, "onDraw:boardstartX:" + x1);
+            Log.d(TAG, "onDraw:boardstartY:" + y1);
+            Log.d(TAG, "onDraw:boardendX:" + x2);
+            Log.d(TAG, "onDraw:boardendY:" + y2);
             canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.getmBeam());
+        }
     }
 
     @Override
@@ -86,19 +92,23 @@ public class ChessBoard extends View {
         final int x = (int) event.getX();
         final int y = (int) event.getY();
 
-        final int col = (x - x1) / mTileSize;
-        final int row = (y - y1) / mTileSize;
+        if ((x > x1 && x < x2) && (y > y1 && y < y2)) {
+            final int col = (int) ((x - x1) / mTileSize);
+            final int row = (int) ((y - y1) / mTileSize);
 
-        Level level = mBoardModel.getmLevel();
-        char symbols[][] = level.getObjectLayer();
+            Level level = mBoardModel.getmLevel();
+            char symbols[][] = level.getObjectLayer();
 
-        if ((row >= 0 && col >= 0) && (row < ROWS && col < COLS)) {
             if (symbols[row][col] == 'B' && !level.isAllMirrorsDeployed()) {
                 mController.putMirror(row, col);
             } else if (symbols[row][col] == 'M') {
                 mController.pickMirror(row, col);
             } else if ((row == 0 || row == 9 || col == 0 || col == 9)
                     && level.isAllMirrorsDeployed()) {
+                Log.d(TAG, "onTouchEvent:boardstartX:" + x1);
+                Log.d(TAG, "onTouchEvent:boardstartY:" + y1);
+                Log.d(TAG, "onTouchEvent:boardendX:" + x2);
+                Log.d(TAG, "onTouchEvent:boardendY:" + y2);
                 mController.requestForLaser(row, col, x1, y1, x2, y2);
             }
         }
@@ -113,14 +123,6 @@ public class ChessBoard extends View {
 
     private int getTileSizeHeight() {
         return getMeasuredHeight() / ROWS;
-    }
-
-    private static int getScreenWidth() {
-        return Resources.getSystem().getDisplayMetrics().widthPixels;
-    }
-
-    private static int getScreenHeight() {
-        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
 }

@@ -15,7 +15,7 @@ public class AngleSlider implements SeekBar.OnSeekBarChangeListener {
         this.mRotatable = object;
         this.mAngleText = tv;
         this.mListener = angleListener;
-        this.mAngle = object.getmAngle();
+        this.mAngle = object.getAngle();
     }
 
     public AngleSlider(Rotatable object, int id, TextView tv, AngleListener angleListener) {
@@ -23,7 +23,7 @@ public class AngleSlider implements SeekBar.OnSeekBarChangeListener {
         this.mMirrorId = id;
         this.mAngleText = tv;
         this.mListener = angleListener;
-        this.mAngle = object.getmAngle();
+        this.mAngle = object.getAngle();
     }
 
     //public void setmAngle(int angle) { this.mAngle = angle; }

@@ -2,7 +2,7 @@ package com.ergizgizer.lasergame;
 
 public interface Rotatable {
 
-    int getmAngle();
+    int getAngle();
 
-    void setmAngle(int angle);
+    void setAngle(int angle);
 }

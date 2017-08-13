@@ -120,11 +120,11 @@ public class BoardModel {
         return mirror;
     }
 
-    public void drawBoard(Context context, Canvas canvas, int tileSize, int offsetX, int offsetY) {
+    public void drawBoard(Context context, Canvas canvas, float tileSize, float offsetX, float offsetY) {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
-                final int xCoord = getXCoord(offsetX, col, tileSize);
-                final int yCoord = getYCoord(offsetY, row, tileSize);
+                final float xCoord = getXCoord(offsetX, tileSize, col);
+                final float yCoord = getYCoord(offsetY, tileSize, row);
                 BoardObject obj = mTiles[row][col];
                 obj.setEdges(xCoord, yCoord, xCoord + tileSize, yCoord + tileSize);
                 obj.draw(context, canvas);
@@ -132,11 +132,11 @@ public class BoardModel {
         }
     }
 
-    private int getXCoord(final int offsetX, final int tileSize, final int col) {
+    private float getXCoord(final float offsetX, final float tileSize, final int col) {
         return offsetX + tileSize * col;
     }
 
-    private int getYCoord(final int offsetY, final int tileSize, final int row) {
+    private float getYCoord(final float offsetY, final float tileSize, final int row) {
         return offsetY + tileSize * row;
     }
 }

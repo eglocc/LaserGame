@@ -11,12 +11,14 @@ public class Mirror extends BoardObject implements Rotatable {
     private int mAngle;
     private int mId;
     private Matrix mTransformationMatrix;
+    private Bitmap mUnrotatedIcon;
     private Bitmap mRotatedIcon;
 
     public Mirror(Context context, int rowIndex, int columnIndex, int id) {
         super(context, rowIndex, columnIndex);
         this.mId = id;
-        setmIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.s56));
+        mUnrotatedIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.s56);
+        setmIcon(mUnrotatedIcon);
         mTransformationMatrix = new Matrix();
     }
 
@@ -27,7 +29,7 @@ public class Mirror extends BoardObject implements Rotatable {
         setmIcon(mRotatedIcon);
         canvas.drawBitmap(getmIcon(), this.left, this.top, null);
         //desired to fix
-        setmIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.s56));
+        setmIcon(mUnrotatedIcon);
     }
 
     public int getmId() {
@@ -38,20 +40,20 @@ public class Mirror extends BoardObject implements Rotatable {
         this.mId = id;
     }
 
-    public int getmAngle() {
+    public int getAngle() {
         return mAngle;
     }
 
-    public void setmAngle(int angle) {
+    public void setAngle(int angle) {
         this.mAngle = angle;
     }
 
     private Bitmap rotateBitmap(float angle) {
         mTransformationMatrix.reset();
-        Bitmap source = getmIcon();
+        int width = getmIcon().getWidth();
+        int height = getmIcon().getHeight();
         mTransformationMatrix.postRotate(mAngle, centerX(), centerY());
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), mTransformationMatrix, true);
+        return Bitmap.createBitmap(getmIcon(), 0, 0, width, height, mTransformationMatrix, true);
     }
-
 
 }
