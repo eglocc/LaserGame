@@ -12,14 +12,16 @@ public abstract class BoardObject extends RectF {
 
 	private static final String TAG = BoardObject.class.getSimpleName();
 
+	private Context mContext;
 	private final int mRowIndex;
 	private final int mColumnIndex;
 	private final String mCode;
 
+	private Bitmap mIcon;
 	private final Paint mBackgroundColor;
-	private Bitmap mBitmap;
 
-    public BoardObject(int rowIndex, int columnIndex) {
+	public BoardObject(Context context, int rowIndex, int columnIndex) {
+		this.mContext = context;
 		this.mRowIndex = rowIndex;
 		this.mColumnIndex = columnIndex;
 		this.mCode = ("" + (char) ('A' + mColumnIndex) + (mRowIndex + 1));
@@ -48,12 +50,12 @@ public abstract class BoardObject extends RectF {
 		set(left, top, right, bottom);
 	}
 
-	public Bitmap getmBitmap() {
-		return mBitmap;
+	public Bitmap getmIcon() {
+		return mIcon;
 	}
 
-	public void setmBitmap(final Bitmap bitmap) {
-		this.mBitmap = bitmap;
+	public void setmIcon(Bitmap mIcon) {
+		this.mIcon = mIcon;
 	}
 
 	public void draw(Context context, final Canvas canvas) {

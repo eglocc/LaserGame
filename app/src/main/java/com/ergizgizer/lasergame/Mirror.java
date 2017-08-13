@@ -4,24 +4,30 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 
 public class Mirror extends BoardObject implements Rotatable {
 
     private int mAngle;
     private int mId;
+    private Matrix mTransformationMatrix;
+    private Bitmap mRotatedIcon;
 
-    public Mirror(int rowIndex, int columnIndex, int id) {
-        super(rowIndex, columnIndex);
+    public Mirror(Context context, int rowIndex, int columnIndex, int id) {
+        super(context, rowIndex, columnIndex);
         this.mId = id;
+        setmIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.s56));
+        mTransformationMatrix = new Matrix();
     }
 
     @Override
     public void draw(Context context, final Canvas canvas) {
         super.draw(context, canvas);
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.s72);
-        setmBitmap(bitmap);
-        canvas.rotate(mAngle);
-        canvas.drawBitmap(bitmap, this.left, this.top, null);
+        mRotatedIcon = rotateBitmap(mAngle);
+        setmIcon(mRotatedIcon);
+        canvas.drawBitmap(getmIcon(), this.left, this.top, null);
+        //desired to fix
+        setmIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.s56));
     }
 
     public int getmId() {
@@ -39,4 +45,13 @@ public class Mirror extends BoardObject implements Rotatable {
     public void setmAngle(int angle) {
         this.mAngle = angle;
     }
+
+    private Bitmap rotateBitmap(float angle) {
+        mTransformationMatrix.reset();
+        Bitmap source = getmIcon();
+        mTransformationMatrix.postRotate(mAngle, centerX(), centerY());
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), mTransformationMatrix, true);
+    }
+
+
 }

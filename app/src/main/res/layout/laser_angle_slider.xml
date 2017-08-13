@@ -18,10 +18,9 @@
         android:id="@+id/laser_angle_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:layout_below="@id/laser_angle_indicator"
         android:max="180"
-        android:maxHeight="50dp"
-        android:minHeight="30dp"
         android:progress="90"
         android:thumbTint="@color/laser_red" />
 

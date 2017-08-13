@@ -1,6 +1,8 @@
 package com.ergizgizer.lasergame;
 
 import android.app.FragmentTransaction;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,11 +21,15 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mBoardModel = new BoardModel();
+        mBoardModel = new BoardModel(this);
         mLaserAngleFragment = (LaserAngleFragment) getFragmentManager().findFragmentById(R.id.laser_angle_fragment);
         mLaserAngleFragment.setmLaser(mBoardModel.getmLaser());
 
         updateBoard();
+
+        Bitmap planet = BitmapFactory.decodeResource(getResources(), R.drawable.p56);
+        Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.t56);
+        Bitmap mirror = BitmapFactory.decodeResource(getResources(), R.drawable.s56);
 
     }
 
@@ -55,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
         Log.d(TAG, sSquareClicked + "[" + sRow + row + "," + sColumn + col + "]");
         mBoardModel.putMirror(row, col);
         updateBoard();
-        int no = mBoardModel.getmLevel().getNumberOfMirrors();
-        boolean b = mBoardModel.getmLevel().isAllMirrorsDeployed();
         if (mBoardModel.getmLevel().isAllMirrorsDeployed()) {
             Mirror[] mirrors = mBoardModel.getmMirrors();
             putMirrorPanel(mirrors);
@@ -98,5 +102,6 @@ public class MainActivity extends AppCompatActivity implements MyStrings, ChessB
     public void mirrorAngleChanged(int id, int angle) {
         Mirror mirror = mBoardModel.getmMirrors()[id];
         mirror.setmAngle(angle);
+        updateBoard();
     }
 }

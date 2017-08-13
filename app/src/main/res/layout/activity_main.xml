@@ -8,20 +8,22 @@
         android:id="@+id/laser_angle_fragment"
         class="com.ergizgizer.lasergame.LaserAngleFragment"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="@dimen/margin_from_sides" />
 
     <FrameLayout
         android:id="@+id/board_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="0dp"
+        android:layout_weight="4" />
 
     <FrameLayout
         android:id="@+id/mirror_panel_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_from_sides"
-        android:layout_marginTop="@dimen/margin_from_sides" />
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:layout_marginTop="@dimen/margin_from_sides"
+        android:layout_marginBottom="@dimen/margin_from_sides" />
 
 </LinearLayout>

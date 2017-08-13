@@ -24,10 +24,9 @@
             android:id="@+id/mirror_angle_seekbar_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:layout_below="@id/mirror_angle_indicator_1"
             android:max="180"
-            android:maxHeight="50dp"
-            android:minHeight="30dp"
             android:progress="0"
             android:thumbTint="@android:color/holo_blue_light" />
 
@@ -62,10 +61,9 @@
             android:id="@+id/mirror_angle_seekbar_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:layout_below="@id/mirror_angle_indicator_2"
             android:max="180"
-            android:maxHeight="50dp"
-            android:minHeight="30dp"
             android:progress="0"
             android:thumbTint="@android:color/holo_blue_light" />
 
@@ -100,10 +98,9 @@
             android:id="@+id/mirror_angle_seekbar_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:layout_below="@id/mirror_angle_indicator_3"
             android:max="180"
-            android:maxHeight="50dp"
-            android:minHeight="30dp"
             android:progress="0"
             android:thumbTint="@android:color/holo_blue_light" />
 

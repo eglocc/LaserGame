@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -25,8 +26,8 @@ public class ChessBoard extends View {
     private Context mContext;
     private BoardModel mBoardModel;
     private BoardListener mController;
-    private static final int x1 = 0;
-    private static final int y1 = 0;
+    private int x1;
+    private int y1;
     private int x2;
     private int y2;
     private int mTileSize;
@@ -47,18 +48,33 @@ public class ChessBoard extends View {
         this.mBoardModel = model;
     }
 
+    private void setMargins() {
+        int measuredWidth = getMeasuredWidth();
+
+    }
+
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        Log.d(TAG, MeasureSpec.toString(widthMeasureSpec));
+        Log.d(TAG, MeasureSpec.toString(heightMeasureSpec));
+        mTileSize = Math.min(getTileSizeWidth(), getTileSizeHeight());
+        Log.d(TAG, Integer.toString(mTileSize));
+        int width = mTileSize * COLS;
+        int height = mTileSize * ROWS;
+        x1 = (getMeasuredWidth() - width) / 2;
+        y1 = 0;
+        x2 = x1 + mTileSize * COLS;
+        y2 = y1 + mTileSize * ROWS;
+
+
     }
 
     @Override
     protected void onDraw(final Canvas canvas) {
-        final int width = getWidth();
-        final int height = getHeight();
-        mTileSize = Math.min(getTileSizeWidth(width), getTileSizeHeight(height));
-        x2 = mTileSize * COLS;
-        y2 = mTileSize * ROWS;
+        Log.d(TAG, Integer.toString(getWidth()));
+        Log.d(TAG, Integer.toString(getHeight()));
         mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
         Laser laser = mBoardModel.getmLaser();
         if (laser != null && laser.isOn())
@@ -70,30 +86,33 @@ public class ChessBoard extends View {
         final int x = (int) event.getX();
         final int y = (int) event.getY();
 
-        final int col = x / mTileSize;
-        final int row = y / mTileSize;
+        final int col = (x - x1) / mTileSize;
+        final int row = (y - y1) / mTileSize;
 
         Level level = mBoardModel.getmLevel();
         char symbols[][] = level.getObjectLayer();
 
-        if (symbols[row][col] == 'B' && !level.isAllMirrorsDeployed()) {
-            mController.putMirror(row, col);
-        } else if (symbols[row][col] == 'M') {
-            mController.pickMirror(row, col);
-        } else if ((row == 0 || row == 9 || col == 0 || col == 9)
-                && level.isAllMirrorsDeployed()) {
-            mController.requestForLaser(row, col, x1, y1, x2, y2);
+        if ((row >= 0 && col >= 0) && (row < ROWS && col < COLS)) {
+            if (symbols[row][col] == 'B' && !level.isAllMirrorsDeployed()) {
+                mController.putMirror(row, col);
+            } else if (symbols[row][col] == 'M') {
+                mController.pickMirror(row, col);
+            } else if ((row == 0 || row == 9 || col == 0 || col == 9)
+                    && level.isAllMirrorsDeployed()) {
+                mController.requestForLaser(row, col, x1, y1, x2, y2);
+            }
         }
+
 
         return super.onTouchEvent(event);
     }
 
-    private int getTileSizeWidth(int width) {
-        return width / COLS;
+    private int getTileSizeWidth() {
+        return getMeasuredWidth() / COLS;
     }
 
-    private int getTileSizeHeight(int height) {
-        return height / ROWS;
+    private int getTileSizeHeight() {
+        return getMeasuredHeight() / ROWS;
     }
 
     private static int getScreenWidth() {

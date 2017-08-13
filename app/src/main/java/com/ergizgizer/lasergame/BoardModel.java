@@ -14,13 +14,15 @@ public class BoardModel {
     static final int ROWS = 10;
     static final int COLS = 10;
 
+    private Context mContext;
     private BoardObject[][] mTiles;
     private Level mLevel;
     private Laser mLaser;
     private Mirror[] mMirrors;
     private Stack<Integer> mMirrorBackStack;
 
-    public BoardModel() {
+    public BoardModel(Context context) {
+        this.mContext = context;
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = new Level();
         initBoard();
@@ -29,7 +31,8 @@ public class BoardModel {
         mMirrorBackStack = new Stack<>();
     }
 
-    public BoardModel(Level level) {
+    public BoardModel(Context context, Level level) {
+        this.mContext = context;
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = level;
         initBoard();
@@ -75,11 +78,11 @@ public class BoardModel {
             for (int j = 0; j < mTiles[i].length; j++) {
 
                 if (mLevel.getObjectLayer()[i][j] == 'O') {
-                    mTiles[i][j] = new Obstacle(i, j);
+                    mTiles[i][j] = new Obstacle(mContext, i, j);
                 } else if (mLevel.getObjectLayer()[i][j] == 'T') {
-                    mTiles[i][j] = new Target(i, j);
+                    mTiles[i][j] = new Target(mContext, i, j);
                 } else {
-                    mTiles[i][j] = new Air(i, j);
+                    mTiles[i][j] = new Air(mContext, i, j);
                 }
             }
         }
@@ -89,9 +92,9 @@ public class BoardModel {
         mLevel.putMirror(r, c);
 
         if (mMirrorBackStack.empty())
-            mTiles[r][c] = new Mirror(r, c, mLevel.getNumberOfMirrors());
+            mTiles[r][c] = new Mirror(mContext, r, c, mLevel.getNumberOfMirrors());
         else
-            mTiles[r][c] = new Mirror(r, c, mMirrorBackStack.pop());
+            mTiles[r][c] = new Mirror(mContext, r, c, mMirrorBackStack.pop());
 
         Mirror mirror = (Mirror) mTiles[r][c];
         mMirrors[mirror.getmId() - 1] = mirror;
@@ -110,7 +113,7 @@ public class BoardModel {
         mMirrorBackStack.push(id);
         mMirrors[id - 1] = null;
 
-        mTiles[r][c] = new Air(r, c);
+        mTiles[r][c] = new Air(mContext, r, c);
 
         Log.d(TAG, mMirrorBackStack.toString());
         Log.d(TAG, Arrays.toString(mMirrors));
