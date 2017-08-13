@@ -10,6 +10,9 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static com.ergizgizer.lasergame.Line.Direction.DOWNWARDS_LEFT;
+import static com.ergizgizer.lasergame.Line.Direction.UPWARDS_LEFT;
+
 public class Laser extends Line implements Rotatable {
 
     private static final String TAG = Laser.class.getSimpleName();
@@ -113,8 +116,8 @@ public class Laser extends Line implements Rotatable {
                 setLine(mSourceTile.centerX(), mSourceTile.bottom, endX, startX, endX, startY, endY);
             }
         }
-        mBlockingTile = getBlockingTile(startX, endX, startY, endY);
         setmDirection(startX, endX, startY, endY);
+        mBlockingTile = getBlockingTile(startX, endX, startY, endY);
         Log.d(TAG, getmDirection().toString());
         mIntersectionPoint = getIntersectionPoint();
         evaluateLaserState();
@@ -209,49 +212,162 @@ public class Laser extends Line implements Rotatable {
 
     @Nullable
     private BoardObject getBlockingTile(final float startX, final float endX, final float startY, final float endY) {
-        if (y1 > y2) {
-            if (x1 == endX) {
-                for (int i = mArea.length - 1; i >= 0; i--) {
-                    for (int j = mArea[i].length - 1; j >= 0; j--) {
-                        if (this.intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
-                            return mArea[i][j];
+        BoardObject blockingObject = null;
+        if (x1 == startX) {
+            switch (getmDirection()) {
+                case DOWNWARDS_RIGHT:
+                    for (int i = 0; i < mArea.length; i++) {
+                        for (int j = 0; j < mArea[i].length; j++) {
+                            if (intersects(mArea[j][i]) && !(mArea[j][i] instanceof Air)) {
+                                blockingObject = mArea[j][i];
+                                //For breaking out both loops when this condition is met
+                                i = mArea.length;
+                                break;
+                            }
                         }
                     }
-                }
-            } else {
-                for (int i = mArea.length - 1; i >= 0; i--) {
-                    for (int j = 0; j < mArea[i].length; j++) {
-                        if (this.intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
-                            return mArea[i][j];
+                    break;
+                case UPWARDS_LEFT:
+                    for (int i = 0; i < mArea.length; i++) {
+                        for (int j = mArea[i].length - 1; j >= 0; j--) {
+                            if (intersects(mArea[j][i]) && !(mArea[j][i] instanceof Air)) {
+                                blockingObject = mArea[j][i];
+                                //For breaking out both loops when this condition is met
+                                i = mArea.length;
+                                break;
+                            }
                         }
                     }
-                }
+                    break;
+                case CONSTANT_RIGHT:
+                    int j = mSourceTile.getmRowIndex();
+                    for (int i = 0; i < mArea[j].length; i++) {
+                        if (intersects(mArea[j][i]) && !(mArea[j][i] instanceof Air)) {
+                            blockingObject = mArea[j][i];
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    Log.d(TAG, "What are the odds?");
             }
-        } else if (y1 < y2) {
-            for (int i = 0; i < mArea.length; i++) {
-                for (int j = 0; j < mArea[i].length; j++) {
-                    if (this.intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
-                        return mArea[i][j];
+        } else if (y1 == startY) {
+            switch (getmDirection()) {
+                case DOWNWARDS_RIGHT:
+                    for (int i = 0; i < mArea.length; i++) {
+                        for (int j = 0; j < mArea[i].length; j++) {
+                            if (intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
+                                blockingObject = mArea[i][j];
+                                //For breaking out both loops when this condition is met
+                                i = mArea.length;
+                                break;
+                            }
+                        }
                     }
-                }
+                    break;
+                case DOWNWARDS_LEFT:
+                    for (int i = 0; i < mArea.length; i++) {
+                        for (int j = mArea.length - 1; j >= 0; j--) {
+                            if (intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
+                                blockingObject = mArea[i][j];
+                                //For breaking out both loops when this condition is met
+                                i = mArea.length;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case CONSTANT_DOWN:
+                    int j = mSourceTile.getmColumnIndex();
+                    for (int i = 0; i < mArea.length; i++) {
+                        if (intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
+                            blockingObject = mArea[i][j];
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    Log.d(TAG, "What are the odds?");
             }
-        } else {
-            int i = mSourceTile.getmRowIndex();
-            if (x1 > x2) {
-                for (int j = mArea.length - 1; j >= 0; j--) {
-                    if (this.intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
-                        return mArea[i][j];
+        } else if (x1 == endX) {
+            switch (getmDirection()) {
+                case DOWNWARDS_LEFT:
+                    for (int i = mArea.length - 1; i >= 0; i--) {
+                        for (int j = 0; j < mArea[i].length; j++) {
+                            if (intersects(mArea[j][i]) && !(mArea[j][i] instanceof Air)) {
+                                blockingObject = mArea[j][i];
+                                //For breaking out both loops when this condition is met
+                                i = -1;
+                                break;
+                            }
+                        }
                     }
-                }
-            } else {
-                for (int j = 0; j < mArea.length; j++) {
-                    if (this.intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
-                        return mArea[i][j];
+                    break;
+                case UPWARDS_RIGHT:
+                    for (int i = mArea.length - 1; i >= 0; i--) {
+                        for (int j = mArea[i].length - 1; j >= 0; j--) {
+                            if (intersects(mArea[j][i]) && !(mArea[j][i] instanceof Air)) {
+                                blockingObject = mArea[j][i];
+                                //For breaking out both loops when this condition is met
+                                i = -1;
+                                break;
+                            }
+                        }
                     }
-                }
+                    break;
+                case CONSTANT_LEFT:
+                    int j = mSourceTile.getmRowIndex();
+                    for (int i = mArea[j].length; i >= 0; i--) {
+                        if (intersects(mArea[j][i]) && !(mArea[j][i] instanceof Air)) {
+                            blockingObject = mArea[j][i];
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    Log.d(TAG, "What are the odds?");
+            }
+        } else if (y1 == endY) {
+            switch (getmDirection()) {
+                case UPWARDS_RIGHT:
+                    for (int i = mArea.length - 1; i >= 0; i--) {
+                        for (int j = 0; j < mArea[i].length; j++) {
+                            if (intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
+                                blockingObject = mArea[i][j];
+                                //For breaking out both loops when this condition is met
+                                i = -1;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case UPWARDS_LEFT:
+                    for (int i = mArea.length - 1; i >= 0; i--) {
+                        for (int j = mArea[i].length - 1; j >= 0; j--) {
+                            if (intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
+                                blockingObject = mArea[i][j];
+                                //For breaking out both loops when this condition is met
+                                i = -1;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case CONSTANT_UP:
+                    int j = mSourceTile.getmColumnIndex();
+                    for (int i = mArea.length - 1; i >= 0; i--) {
+                        if (intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
+                            blockingObject = mArea[i][j];
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    Log.d(TAG, "What are the odds?");
             }
         }
-        return null;
+
+        return blockingObject;
     }
 
     @Nullable
@@ -374,7 +490,7 @@ public class Laser extends Line implements Rotatable {
                     }
                 }
             } else if ((mIntersectionPoint.y == mBlockingTile.top || mIntersectionPoint.y == mBlockingTile.bottom)
-                    && (getmDirection() == Direction.DOWNWARDS_LEFT || getmDirection() == Direction.UPWARDS_LEFT)) {
+                    && (getmDirection() == DOWNWARDS_LEFT || getmDirection() == UPWARDS_LEFT)) {
                 Iterator<PointF> it = getPointsInInterval(mIntersectionPoint.x, mBlockingTile.left).iterator();
                 while (it.hasNext()) {
                     PointF p = it.next();
