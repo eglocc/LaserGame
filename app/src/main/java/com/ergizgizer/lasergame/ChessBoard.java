@@ -66,10 +66,6 @@ public class ChessBoard extends View {
         y1 = 0;
         x2 = x1 + mTileSize * COLS;
         y2 = y1 + mTileSize * ROWS;
-        Log.d(TAG, "onMeasure:boardstartX:" + x1);
-        Log.d(TAG, "onMeasure:boardstartY:" + y1);
-        Log.d(TAG, "onMeasure:boardendX:" + x2);
-        Log.d(TAG, "onMeasure:boardendY:" + y2);
     }
 
     @Override
@@ -79,10 +75,6 @@ public class ChessBoard extends View {
         mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
         Laser laser = mBoardModel.getmLaser();
         if (laser != null && laser.isOn()) {
-            Log.d(TAG, "onDraw:boardstartX:" + x1);
-            Log.d(TAG, "onDraw:boardstartY:" + y1);
-            Log.d(TAG, "onDraw:boardendX:" + x2);
-            Log.d(TAG, "onDraw:boardendY:" + y2);
             canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.getmBeam());
         }
     }
@@ -105,10 +97,6 @@ public class ChessBoard extends View {
                 mController.pickMirror(row, col);
             } else if ((row == 0 || row == 9 || col == 0 || col == 9)
                     && level.isAllMirrorsDeployed()) {
-                Log.d(TAG, "onTouchEvent:boardstartX:" + x1);
-                Log.d(TAG, "onTouchEvent:boardstartY:" + y1);
-                Log.d(TAG, "onTouchEvent:boardendX:" + x2);
-                Log.d(TAG, "onTouchEvent:boardendY:" + y2);
                 mController.requestForLaser(row, col, x1, y1, x2, y2);
             }
         }

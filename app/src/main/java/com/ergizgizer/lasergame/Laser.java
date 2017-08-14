@@ -119,7 +119,7 @@ public class Laser extends Line implements Rotatable {
         setmDirection(startX, endX, startY, endY);
         mBlockingTile = getBlockingTile(startX, endX, startY, endY);
         Log.d(TAG, getmDirection().toString());
-        mIntersectionPoint = getIntersectionPoint();
+        mIntersectionPoint = getIntersectionPoint(startX, endX, startY, endY);
         evaluateLaserState();
     }
 
@@ -267,7 +267,7 @@ public class Laser extends Line implements Rotatable {
                     break;
                 case DOWNWARDS_LEFT:
                     for (int i = 0; i < mArea.length; i++) {
-                        for (int j = mArea.length - 1; j >= 0; j--) {
+                        for (int j = mArea[i].length - 1; j >= 0; j--) {
                             if (intersects(mArea[i][j]) && !(mArea[i][j] instanceof Air)) {
                                 blockingObject = mArea[i][j];
                                 //For breaking out both loops when this condition is met
@@ -317,7 +317,7 @@ public class Laser extends Line implements Rotatable {
                     break;
                 case CONSTANT_LEFT:
                     int j = mSourceTile.getmRowIndex();
-                    for (int i = mArea[j].length; i >= 0; i--) {
+                    for (int i = mArea[j].length - 1; i >= 0; i--) {
                         if (intersects(mArea[j][i]) && !(mArea[j][i] instanceof Air)) {
                             blockingObject = mArea[j][i];
                             break;
@@ -371,7 +371,7 @@ public class Laser extends Line implements Rotatable {
     }
 
     @Nullable
-    private PointF getIntersectionPoint() {
+    private PointF getIntersectionPoint(final float startX, final float endX, final float startY, final float endY) {
         PointF intersectionPoint = null;
 
         if (mBlockingTile == null) {
@@ -397,6 +397,7 @@ public class Laser extends Line implements Rotatable {
                 intersectionPoint = new PointF(mBlockingTile.centerX(), mBlockingTile.bottom);
                 break;
             case DOWNWARDS_LEFT:
+                // when y1 = starty and x1 = endx;
                 if (intersectsLine(top)) {
                     final float y = mBlockingTile.top;
                     final float x = getXValue(y);
@@ -408,6 +409,7 @@ public class Laser extends Line implements Rotatable {
                 }
                 break;
             case DOWNWARDS_RIGHT:
+                // when y1 = starty and x1 = startx
                 if (intersectsLine(top)) {
                     final float y = mBlockingTile.top;
                     final float x = getXValue(y);
@@ -419,30 +421,32 @@ public class Laser extends Line implements Rotatable {
                 }
                 break;
             case UPWARDS_LEFT:
+                //when y1 = endy and x1 = startx
                 if (intersectsLine(bottom)) {
                     final float y = mBlockingTile.bottom;
                     final float x = getXValue(y);
                     intersectionPoint = new PointF(x, y);
-                } else if (intersectsLine(left)) {
+                } else if (x1 == startX && intersectsLine(left)) {
                     final float x = mBlockingTile.left;
                     final float y = getYValue(x);
                     intersectionPoint = new PointF(x, y);
-                } else if (intersectsLine(right)) {
+                } else if (y1 == endY && intersectsLine(right)) {
                     final float x = mBlockingTile.right;
                     final float y = getYValue(x);
                     intersectionPoint = new PointF(x, y);
                 }
                 break;
             case UPWARDS_RIGHT:
+                //when y1 = endy and  x1 = endx
                 if (intersectsLine(bottom)) {
                     final float y = mBlockingTile.bottom;
                     final float x = getXValue(y);
                     intersectionPoint = new PointF(x, y);
-                } else if (intersectsLine(left)) {
+                } else if (y1 == endY && intersectsLine(left)) {
                     final float x = mBlockingTile.left;
                     final float y = getYValue(x);
                     intersectionPoint = new PointF(x, y);
-                } else if (intersectsLine(right)) {
+                } else if (x1 == endX && intersectsLine(right)) {
                     final float x = mBlockingTile.right;
                     final float y = getYValue(x);
                     intersectionPoint = new PointF(x, y);
