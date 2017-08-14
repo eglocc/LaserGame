@@ -102,6 +102,10 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         this.mSourceTile = mArea[row][col];
     }
 
+    public void setmSourceTile(BoardObject object) {
+        this.mSourceTile = object;
+    }
+
     public ArrayList<BoardObject> getmTiles() {
         return mTilesIAmFlowingUpon;
     }
@@ -185,8 +189,9 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         newSegment.setOn(true);
         switch (mIntersectionDirection) {
             case FROM_LEFT:
-
-                //newSegment.setLine(mBlockingPoint.x, mBlockingPoint.y);
+                newSegment.setmSourceTile(mBlockingTile);
+                newSegment.setAngle(mAngle);
+                newSegment.setLine(mBlockingPoint.x, mBlockingPoint.y, startX, startX, endX, startY, endY);
                 setLine(mSourceTile.right, mSourceTile.centerY(), startX, startX, endX, startY, endY);
         }
 
@@ -209,17 +214,17 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
     private void setLine(float x1, float y1, float x2, float startX, float endX, float startY, float endY) {
         super.setLine(x1, y1, x2, getSlope() * (x2 - x1) + y1);
         if (this.y2 > endY) {
-            this.y2 = endY - 1;
+            this.y2 = endY;
             this.x2 = (this.y2 - this.y1) / getSlope() + this.x1;
         } else if (this.y2 < startY) {
-            this.y2 = startY + 1;
+            this.y2 = startY;
             this.x2 = (this.y2 - this.y1) / getSlope() + this.x1;
         } else if (this.x2 > endX) {
-            this.x2 = endX - 1;
+            this.x2 = endX;
             this.y2 = (this.x2 - this.x1) * getSlope() + this.y1;
 
         } else if (this.x2 < startX) {
-            this.x2 = startX + 1;
+            this.x2 = startX;
             this.y2 = (this.x2 - this.x1) * getSlope() + this.y1;
         }
         mPoints = getPointsInInterval(x1, x2);
@@ -627,7 +632,8 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                         }
                     }
                 }
-            } else if ((mIntersectionPoint.y == mBlockingTile.top || mIntersectionPoint.y == mBlockingTile.bottom)
+            } else if ((mIntersectionPoint.y == mBlockingTile.
+                    top || mIntersectionPoint.y == mBlockingTile.bottom)
                     && (getmDirection() == DOWNWARDS_LEFT || getmDirection() == UPWARDS_LEFT)) {
                 Iterator<PointF> it = getPointsInInterval(mIntersectionPoint.x, mBlockingTile.left).iterator();
                 while (it.hasNext()) {

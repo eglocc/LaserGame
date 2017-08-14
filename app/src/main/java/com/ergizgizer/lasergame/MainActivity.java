@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements MyStaticVariables, ChessBoard.BoardListener, AngleListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -71,19 +73,20 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
     @Override
     public void requestForLaser(int row, int col, float x0, float y0, float x1, float y1) {
         Log.d(TAG, sLaserRequested + "[" + sRow + row + "," + sColumn + col + "]");
-        Laser laser = mBoardModel.getmLaserSegment(0);
-        boolean wasOn = laser.isOn();
+        ArrayList<Laser> segments = mBoardModel.getmLaserSegments();
+        Laser sourceSegment = segments.get(0);
+        boolean wasOn = sourceSegment.isOn();
         if (!wasOn) {
-            laser.setmSourceTile(row, col);
-            laser.setAngle(mCurrentLaserAngle);
-            laser.initLaser(x0, x1, y0, y1);
+            sourceSegment.setmSourceTile(row, col);
+            sourceSegment.setAngle(mCurrentLaserAngle);
+            sourceSegment.initLaser(x0, x1, y0, y1);
         } else {
             Laser newLaser = new Laser(mBoardModel);
             newLaser.setAngle(mCurrentLaserAngle);
             mBoardModel.clearLaserSegments();
-            mBoardModel.addNewLaserSegment(new Laser(mBoardModel));
+            mBoardModel.addNewLaserSegment(newLaser);
         }
-        laser.setOn(!wasOn);
+        sourceSegment.setOn(!wasOn);
         updateBoard();
     }
 
