@@ -26,7 +26,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
     private Paint mBeam;
 
     private int mAngle;
-    private int mRelativeAngle;
+    private int mRelativeAngle; // Differs from angle, it is relative to the starting point
     private boolean isOn;
     private BoardModel mBoard;
     private BoardObject[][] mArea;
@@ -69,6 +69,14 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
     @Override
     public void setAngle(int angle) {
         this.mAngle = angle; }
+
+    public int getmRelativeAngle() {
+        return mRelativeAngle;
+    }
+
+    public void setmRelativeAngle(int relativeAngle) {
+        this.mRelativeAngle = relativeAngle;
+    }
 
     public Paint getmBeam() {
         return mBeam;
@@ -117,12 +125,13 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         int row = mSourceTile.getmRowIndex();
         int col = mSourceTile.getmColumnIndex();
         if (col == 0) {
-            setAngle(mAngle + 270);
+            mRelativeAngle = mAngle + 270;
             setLine(mSourceTile.left, mSourceTile.centerY(), endX, startX, endX, startY, endY);
         } else if (col == 9) {
-            setAngle((mAngle + 270) * (-1));
+            mRelativeAngle = (mAngle + 270) * (-1);
             setLine(mSourceTile.right, mSourceTile.centerY(), startX, startX, endX, startY, endY);
         } else if (row == 0) {
+            mRelativeAngle = mAngle;
             if (mAngle == 90) {
                 setLine(mSourceTile.centerX(), mSourceTile.top, mSourceTile.centerX(), endY);
             } else if (mAngle > 90 && mAngle < 180) {
@@ -132,12 +141,13 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
             }
         } else if (row == 9) {
             if (mAngle == 90) {
+                mRelativeAngle = mAngle;
                 setLine(mSourceTile.centerX(), mSourceTile.bottom, mSourceTile.centerX(), startY);
             } else if (mAngle > 90 && mAngle < 180) {
-                setAngle(mAngle * (-1));
+                mRelativeAngle = mAngle * (-1);
                 setLine(mSourceTile.centerX(), mSourceTile.bottom, startX, startX, endX, startY, endY);
             } else {
-                setAngle(mAngle * (-1));
+                mRelativeAngle = mAngle * (-1);
                 setLine(mSourceTile.centerX(), mSourceTile.bottom, endX, startX, endX, startY, endY);
             }
         }
@@ -220,7 +230,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
      * @return
      */
     private float getSlope() {
-        return (float) Math.tan(Math.toRadians(mAngle));
+        return (float) Math.tan(Math.toRadians(mRelativeAngle));
     }
 
     /** Returns the Y-Intercept of the laser
