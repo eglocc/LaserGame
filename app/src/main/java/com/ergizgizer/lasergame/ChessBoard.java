@@ -59,7 +59,7 @@ public class ChessBoard extends View {
         Log.d(TAG, MeasureSpec.toString(widthMeasureSpec));
         Log.d(TAG, MeasureSpec.toString(heightMeasureSpec));
         mTileSize = Math.min(getTileSizeWidth(), getTileSizeHeight());
-        Log.d(TAG, Float.toString(mTileSize));
+        Log.d(TAG, "tileSize:" + Float.toString(mTileSize));
         float width = mTileSize * COLS;
         float height = mTileSize * ROWS;
         x1 = (getMeasuredWidth() - width) / 2;

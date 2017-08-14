@@ -13,7 +13,7 @@ import java.util.Iterator;
 import static com.ergizgizer.lasergame.Line.Direction.DOWNWARDS_LEFT;
 import static com.ergizgizer.lasergame.Line.Direction.UPWARDS_LEFT;
 
-public class Laser extends Line implements Rotatable {
+public class Laser extends Line implements Rotatable, MyStaticVariables {
 
     private static final String TAG = Laser.class.getSimpleName();
 
@@ -27,6 +27,7 @@ public class Laser extends Line implements Rotatable {
     private BoardObject mBlockingTile;
     private ArrayList<PointF> mPoints;
     private PointF mIntersectionPoint;
+    private PointF mBlockingPoint;
 
     public Laser(BoardObject[][] tiles) {
         super();
@@ -38,17 +39,26 @@ public class Laser extends Line implements Rotatable {
         this.mArea = tiles;
     }
 
-    //Public getters and setters
+    // Public getters and setters
 
+    /**
+     * Implemented from Rotatable interface
+     *
+     * @return
+     */
     @Override
     public int getAngle() {
         return mAngle;
     }
 
+    /**
+     * Implemented from Rotatable interface
+     *
+     * @param angle
+     */
     @Override
     public void setAngle(int angle) {
-        this.mAngle = angle;
-    }
+        this.mAngle = angle; }
 
     public Paint getmBeam() {
         return mBeam;
@@ -86,8 +96,13 @@ public class Laser extends Line implements Rotatable {
         return mPoints;
     }
 
-    //Main function of laser
-
+    /** Main function for laser, combines all calculations
+     *
+     * @param startX Left of board
+     * @param endX Right of board
+     * @param startY Top of board
+     * @param endY Bottom of board
+     */
     public void initLaser(final float startX, final float endX, final float startY, final float endY) {
         int row = mSourceTile.getmRowIndex();
         int col = mSourceTile.getmColumnIndex();
@@ -120,11 +135,23 @@ public class Laser extends Line implements Rotatable {
         mBlockingTile = getBlockingTile(startX, endX, startY, endY);
         Log.d(TAG, getmDirection().toString());
         mIntersectionPoint = getIntersectionPoint(startX, endX, startY, endY);
+        if (mIntersectionPoint != null)
+            Log.d(TAG, sIntersectedAt + mIntersectionPoint.toString());
+        mBlockingPoint = getBlockingPoint();
+        if (mBlockingPoint != null)
+            Log.d(TAG, sBlockedAt + mBlockingPoint.toString());
         evaluateLaserState();
     }
 
     // Private methods
 
+    /** Overridden from parent class Line
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     */
     @Override
     public void setLine(float x1, float y1, float x2, float y2) {
         super.setLine(x1, y1, x2, y2);
@@ -150,22 +177,48 @@ public class Laser extends Line implements Rotatable {
         mPoints = getPointsInInterval(x1, x2);
     }
 
+    /** Returns the slope of the laser
+     *
+     * @return
+     */
     private float getSlope() {
         return (float) Math.tan(Math.toRadians(mAngle));
     }
 
+    /** Returns the Y-Intercept of the laser
+     *
+     * @return
+     */
     private float getYIntercept() {
         return y1 - getSlope() * x1;
     }
 
+    /** Finds the Y-value for any X-value
+     *  Same as y = f(x)
+     *
+     * @param x
+     * @return
+     */
     private float getYValue(float x) {
         return getSlope() * x + getYIntercept();
     }
 
+    /** Finds the X-value for any Y-value
+     * Same as inverse of f(x)
+     *
+     * @param y
+     * @return
+     */
     private float getXValue(float y) {
         return (y - getYIntercept()) / getSlope();
     }
 
+    /** Self-explanatory
+     *
+     * @param x1
+     * @param x2
+     * @return
+     */
     private ArrayList<PointF> getPointsInInterval(float x1, float x2) {
         ArrayList<PointF> points = new ArrayList<>();
         if (x1 < x2) {
@@ -190,6 +243,14 @@ public class Laser extends Line implements Rotatable {
         return points;
     }
 
+    /** This method finds all tiles, on which the laser is beamed. I was discouraged to use that.
+     *
+     * @param startX Left of board
+     * @param endX Right of board
+     * @param startY Top of board
+     * @param endY Bottom of board
+     * @return
+     */
     private ArrayList<BoardObject> getTileListLaserIsOn(final float startX, final float endX, final float startY, final float endY) {
         ArrayList<BoardObject> laserIsOn = new ArrayList<>();
         if (y1 == startY || y1 == endY) {
@@ -210,6 +271,14 @@ public class Laser extends Line implements Rotatable {
         return laserIsOn;
     }
 
+    /** Self explanatory, but in case of emergency: This method finds the blocking tile.
+     *
+     * @param startX Left of board
+     * @param endX Right of board
+     * @param startY Top of board
+     * @param endY Bottom of board
+     * @return
+     */
     @Nullable
     private BoardObject getBlockingTile(final float startX, final float endX, final float startY, final float endY) {
         BoardObject blockingObject = null;
@@ -370,6 +439,14 @@ public class Laser extends Line implements Rotatable {
         return blockingObject;
     }
 
+    /** This method finds the intersection point of the laser and the blocking tile.
+     *
+     * @param startX Left of board
+     * @param endX Right of board
+     * @param startY Top of board
+     * @param endY Bottom of board
+     * @return
+     */
     @Nullable
     private PointF getIntersectionPoint(final float startX, final float endX, final float startY, final float endY) {
         PointF intersectionPoint = null;
@@ -467,8 +544,9 @@ public class Laser extends Line implements Rotatable {
                 while (it.hasNext()) {
                     PointF p = it.next();
                     if (mBlockingTile.contains(p.x, p.y)) {
-                        if (isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
+                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            break;
                         }
                     }
                 }
@@ -477,8 +555,9 @@ public class Laser extends Line implements Rotatable {
                 while (it.hasNext()) {
                     PointF p = it.next();
                     if (mBlockingTile.contains(p.x, p.y)) {
-                        if (isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
+                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            break;
                         }
                     }
                 }
@@ -488,8 +567,9 @@ public class Laser extends Line implements Rotatable {
                 while (it.hasNext()) {
                     PointF p = it.next();
                     if (mBlockingTile.contains(p.x, p.y)) {
-                        if (isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
+                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            break;
                         }
                     }
                 }
@@ -499,8 +579,9 @@ public class Laser extends Line implements Rotatable {
                 while (it.hasNext()) {
                     PointF p = it.next();
                     if (mBlockingTile.contains(p.x, p.y)) {
-                        if (isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
+                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            break;
                         }
                     }
                 }
@@ -510,8 +591,9 @@ public class Laser extends Line implements Rotatable {
                 while (it.hasNext()) {
                     PointF p = it.next();
                     if (mBlockingTile.contains(p.x, p.y)) {
-                        if (isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
+                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            break;
                         }
                     }
                 }
@@ -522,8 +604,8 @@ public class Laser extends Line implements Rotatable {
     }
 
     private void evaluateLaserState() {
-        if (mBlockingTile != null && mIntersectionPoint != null) {
-            setLine(x1, y1, mIntersectionPoint.x, mIntersectionPoint.y);
+        if (mBlockingTile != null && mBlockingPoint != null) {
+            setLine(x1, y1, mBlockingPoint.x, mBlockingPoint.y);
         }
     }
 

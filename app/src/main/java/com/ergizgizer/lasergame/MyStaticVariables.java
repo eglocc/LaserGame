@@ -7,6 +7,8 @@ interface MyStaticVariables {
     int OUT_RIGHT = 4;
     int OUT_BOTTOM = 8;
 
+    int sDefaultLaserAngle = 90;
+
     String sOnAuthStateChangedSignedIn = "onAuthStateChanged:signed_in:";
     String sOnAuthStateChangedSignedOut = "onAuthStateChanged:signed_out";
 
@@ -31,5 +33,6 @@ interface MyStaticVariables {
     String sRow = "row:";
     String sColumn = "column:";
 
-    int sDefaultLaserAngle = 90;
+    String sIntersectedAt = "intersected at:";
+    String sBlockedAt = "blocked at:";
 }
