@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import static com.ergizgizer.lasergame.BoardModel.COLS;
 import static com.ergizgizer.lasergame.BoardModel.ROWS;
 
@@ -73,9 +75,11 @@ public class ChessBoard extends View {
         //Log.d(TAG, Integer.toString(getWidth()));
         //Log.d(TAG, Integer.toString(getHeight()));
         mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
-        Laser laser = mBoardModel.getmLaser();
-        if (laser != null && laser.isOn()) {
-            canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.getmBeam());
+        ArrayList<Laser> laserSegments = mBoardModel.getmLaserSegments();
+        for (Laser laser : laserSegments) {
+            if (laser != null && laser.isOn()) {
+                canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.getmBeam());
+            }
         }
     }
 

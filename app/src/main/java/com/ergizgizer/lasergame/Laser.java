@@ -10,6 +10,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static com.ergizgizer.lasergame.Laser.IntersectionDirection.FROM_BOTTOM;
+import static com.ergizgizer.lasergame.Laser.IntersectionDirection.FROM_LEFT;
+import static com.ergizgizer.lasergame.Laser.IntersectionDirection.FROM_RIGHT;
+import static com.ergizgizer.lasergame.Laser.IntersectionDirection.FROM_TOP;
 import static com.ergizgizer.lasergame.Line.Direction.DOWNWARDS_LEFT;
 import static com.ergizgizer.lasergame.Line.Direction.UPWARDS_LEFT;
 
@@ -17,26 +21,32 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
 
     private static final String TAG = Laser.class.getSimpleName();
 
+    enum IntersectionDirection {FROM_LEFT, FROM_RIGHT, FROM_TOP, FROM_BOTTOM}
+
     private Paint mBeam;
 
     private int mAngle;
+    private int mRelativeAngle;
     private boolean isOn;
+    private BoardModel mBoard;
     private BoardObject[][] mArea;
     private BoardObject mSourceTile;
     private ArrayList<BoardObject> mTilesIAmFlowingUpon;
     private BoardObject mBlockingTile;
     private ArrayList<PointF> mPoints;
+    private IntersectionDirection mIntersectionDirection;
     private PointF mIntersectionPoint;
     private PointF mBlockingPoint;
 
-    public Laser(BoardObject[][] tiles) {
+    public Laser(BoardModel model) {
         super();
         mBeam = new Paint();
         mBeam.setAntiAlias(true);
         mBeam.setStrokeWidth(3F);
         mBeam.setColor(Color.RED);
         mBeam.setStyle(Paint.Style.STROKE);
-        this.mArea = tiles;
+        this.mBoard = model;
+        this.mArea = model.getObjects();
     }
 
     // Public getters and setters
@@ -135,15 +145,43 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         mBlockingTile = getBlockingTile(startX, endX, startY, endY);
         Log.d(TAG, getmDirection().toString());
         mIntersectionPoint = getIntersectionPoint(startX, endX, startY, endY);
-        if (mIntersectionPoint != null)
-            Log.d(TAG, sIntersectedAt + mIntersectionPoint.toString());
         mBlockingPoint = getBlockingPoint();
-        if (mBlockingPoint != null)
-            Log.d(TAG, sBlockedAt + mBlockingPoint.toString());
-        evaluateLaserState();
+        evaluateLaserState(startX, endX, startY, endY);
     }
 
     // Private methods
+
+    /**
+     * Helper method for calculating blocking objects
+     *
+     * @param startX Left of board
+     * @param endX   Right of board
+     * @param startY Top of board
+     * @param endY   Bottom of board
+     */
+    private void evaluateLaserState(final float startX, final float endX, final float startY, final float endY) {
+        if (mBlockingTile != null && mBlockingPoint != null) {
+            setLine(x1, y1, mBlockingPoint.x, mBlockingPoint.y);
+            if (mBlockingTile instanceof Mirror) {
+                reflect(mBlockingPoint.x, mBlockingPoint.y, startX, endX, startY, endY);
+            }
+        }
+    }
+
+    private void reflect(final float fromX, final float fromY, final float startX, final float endX, final float startY, final float endY) {
+        Log.d(TAG, "reflectedWith:" + mAngle + "°");
+        Laser newSegment = new Laser(mBoard);
+        mBoard.addNewLaserSegment(newSegment);
+        newSegment.setOn(true);
+        switch (mIntersectionDirection) {
+            case FROM_LEFT:
+
+                //newSegment.setLine(mBlockingPoint.x, mBlockingPoint.y);
+                setLine(mSourceTile.right, mSourceTile.centerY(), startX, startX, endX, startY, endY);
+        }
+
+
+    }
 
     /** Overridden from parent class Line
      *
@@ -546,6 +584,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                     if (mBlockingTile.contains(p.x, p.y)) {
                         if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            mIntersectionDirection = FROM_LEFT;
                             break;
                         }
                     }
@@ -557,6 +596,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                     if (mBlockingTile.contains(p.x, p.y)) {
                         if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            mIntersectionDirection = FROM_RIGHT;
                             break;
                         }
                     }
@@ -569,6 +609,10 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                     if (mBlockingTile.contains(p.x, p.y)) {
                         if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            if (mIntersectionPoint.y == mBlockingTile.top)
+                                mIntersectionDirection = FROM_TOP;
+                            else if (mIntersectionPoint.y == mBlockingTile.bottom)
+                                mIntersectionDirection = FROM_BOTTOM;
                             break;
                         }
                     }
@@ -581,6 +625,10 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                     if (mBlockingTile.contains(p.x, p.y)) {
                         if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            if (mIntersectionPoint.y == mBlockingTile.top)
+                                mIntersectionDirection = FROM_TOP;
+                            else if (mIntersectionPoint.y == mBlockingTile.bottom)
+                                mIntersectionDirection = FROM_BOTTOM;
                             break;
                         }
                     }
@@ -593,6 +641,10 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                     if (mBlockingTile.contains(p.x, p.y)) {
                         if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
                             blockingPoint = p;
+                            if (mIntersectionPoint.y == mBlockingTile.top)
+                                mIntersectionDirection = FROM_TOP;
+                            else if (mIntersectionPoint.y == mBlockingTile.bottom)
+                                mIntersectionDirection = FROM_BOTTOM;
                             break;
                         }
                     }
@@ -601,12 +653,6 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         }
 
         return blockingPoint;
-    }
-
-    private void evaluateLaserState() {
-        if (mBlockingTile != null && mBlockingPoint != null) {
-            setLine(x1, y1, mBlockingPoint.x, mBlockingPoint.y);
-        }
     }
 
     private static boolean isTransparent(Bitmap bitmap, int x, int y) {

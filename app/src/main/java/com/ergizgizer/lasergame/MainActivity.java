@@ -1,8 +1,6 @@
 package com.ergizgizer.lasergame;
 
 import android.app.FragmentTransaction;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -23,14 +21,9 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
 
         mBoardModel = new BoardModel(this);
         mLaserAngleFragment = (LaserAngleFragment) getFragmentManager().findFragmentById(R.id.laser_angle_fragment);
-        mLaserAngleFragment.setmLaser(mBoardModel.getmLaser());
+        mLaserAngleFragment.setmLaser(mBoardModel.getmLaserSegment(0));
 
         updateBoard();
-
-        Bitmap planet = BitmapFactory.decodeResource(getResources(), R.drawable.p56);
-        Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.t56);
-        Bitmap mirror = BitmapFactory.decodeResource(getResources(), R.drawable.s56);
-
     }
 
     private void updateBoard() {
@@ -78,16 +71,17 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
     @Override
     public void requestForLaser(int row, int col, float x0, float y0, float x1, float y1) {
         Log.d(TAG, sLaserRequested + "[" + sRow + row + "," + sColumn + col + "]");
-        Laser laser = mBoardModel.getmLaser();
+        Laser laser = mBoardModel.getmLaserSegment(0);
         boolean wasOn = laser.isOn();
         if (!wasOn) {
             laser.setmSourceTile(row, col);
             laser.setAngle(mCurrentLaserAngle);
             laser.initLaser(x0, x1, y0, y1);
         } else {
-            Laser newLaser = new Laser(mBoardModel.getObjects());
+            Laser newLaser = new Laser(mBoardModel);
             newLaser.setAngle(mCurrentLaserAngle);
-            mBoardModel.setmLaser(newLaser);
+            mBoardModel.clearLaserSegments();
+            mBoardModel.addNewLaserSegment(new Laser(mBoardModel));
         }
         laser.setOn(!wasOn);
         updateBoard();

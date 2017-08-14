@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -17,7 +18,7 @@ public class BoardModel {
     private Context mContext;
     private BoardObject[][] mTiles;
     private Level mLevel;
-    private Laser mLaser;
+    private ArrayList<Laser> mLaserSegments;
     private Mirror[] mMirrors;
     private Stack<Integer> mMirrorBackStack;
 
@@ -26,7 +27,8 @@ public class BoardModel {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = new Level();
         initBoard();
-        mLaser = new Laser(mTiles);
+        mLaserSegments = new ArrayList<>();
+        mLaserSegments.add(new Laser(this));
         mMirrors = new Mirror[mLevel.getNumberOfAllowedMirrors()];
         mMirrorBackStack = new Stack<>();
     }
@@ -36,7 +38,8 @@ public class BoardModel {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = level;
         initBoard();
-        mLaser = new Laser(mTiles);
+        mLaserSegments = new ArrayList<>();
+        mLaserSegments.add(new Laser(this));
         mMirrors = new Mirror[mLevel.getNumberOfAllowedMirrors()];
         mMirrorBackStack = new Stack<>();
     }
@@ -65,12 +68,20 @@ public class BoardModel {
         this.mLevel = level;
     }
 
-    public final Laser getmLaser() {
-        return mLaser;
+    public ArrayList<Laser> getmLaserSegments() {
+        return mLaserSegments;
     }
 
-    public void setmLaser(Laser laser) {
-        this.mLaser = laser;
+    public void clearLaserSegments() {
+        mLaserSegments.clear();
+    }
+
+    public final Laser getmLaserSegment(int index) {
+        return mLaserSegments.get(index);
+    }
+
+    public void addNewLaserSegment(Laser laser) {
+        mLaserSegments.add(laser);
     }
 
     public void initBoard() {
