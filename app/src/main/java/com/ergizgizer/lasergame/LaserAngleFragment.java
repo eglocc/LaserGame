@@ -20,6 +20,7 @@ public class LaserAngleFragment extends Fragment {
     private TextView mAngleInDegrees;
 
     private Laser mLaser;
+    private AngleSlider mSeekBarListener;
 
     public void setmLaser(Laser laser) {
         this.mLaser = laser;
@@ -44,7 +45,16 @@ public class LaserAngleFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        AngleSlider angleSlider = new AngleSlider(mLaser, mAngleInDegrees, mController);
-        mLaserAngleSeekBar.setOnSeekBarChangeListener(angleSlider);
+        mSeekBarListener = new AngleSlider(mLaser, mAngleInDegrees, mController);
+        mLaserAngleSeekBar.setOnSeekBarChangeListener(mSeekBarListener);
+        if (savedInstanceState != null) {
+            mAngleInDegrees.setText(savedInstanceState.getString("laser_angle_text"));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("laser_angle_text", mAngleInDegrees.getText().toString());
     }
 }

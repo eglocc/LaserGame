@@ -4,8 +4,11 @@
     <string name="fb_login_protocol_scheme">fb133429360593684</string>
 
     <string name="auth_failed">Authentication Failed!</string>
-    <string name="username">Username</string>
+    <string name="username">Username or Email</string>
     <string name="password">Password</string>
+    <string name="create_account">Create Account</string>
+    <string name="sign_in">Sıgn In</string>
+    <string name="loading">Loading...</string>
 
     <string name="laser_angle_indicator">Laser Angle: </string>
     <string name="mirror_angle_indicator">Mirror Angle: </string>

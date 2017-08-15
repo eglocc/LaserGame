@@ -1,19 +1,20 @@
 package com.ergizgizer.lasergame;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 public class Target extends BoardObject {
 
-    public Target(Context context, int rowIndex, int columnIndex) {
-        super(context, rowIndex, columnIndex);
-        setmIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.t56));
+    static Bitmap sTargetIcon;
+
+    public Target(int rowIndex, int columnIndex) {
+        super(rowIndex, columnIndex);
     }
 
     @Override
     public void draw(Context context, final Canvas canvas) {
         super.draw(context, canvas);
-        canvas.drawBitmap(getmIcon(), this.left, this.top, null);
+        canvas.drawBitmap(sTargetIcon, this.left, this.top, null);
     }
 }

@@ -2,28 +2,75 @@ package com.ergizgizer.lasergame;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.RectF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
 
-public class BoardModel {
+public class BoardModel implements Parcelable {
 
     private static final String TAG = BoardModel.class.getSimpleName();
 
     static final int ROWS = 10;
     static final int COLS = 10;
 
-    private Context mContext;
+    private RectF mBoardDimension;
     private BoardObject[][] mTiles;
     private Level mLevel;
     private ArrayList<Laser> mLaserSegments;
     private Mirror[] mMirrors;
     private Stack<Integer> mMirrorBackStack;
 
-    public BoardModel(Context context) {
-        this.mContext = context;
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(mLaserSegments.get(0), flags);
+        dest.writeInt(mMirrors.length);
+        dest.writeTypedArray(mMirrors, flags);
+        dest.writeSerializable(mMirrorBackStack);
+    }
+
+    private BoardModel(Parcel source) {
+        mLaserSegments = source.readArrayList(Laser.class.getClassLoader());
+        mMirrors = new Mirror[source.readInt()];
+        source.readTypedArray(mMirrors, Mirror.CREATOR);
+        mMirrorBackStack = (Stack<Integer>) source.readSerializable();
+        mTiles = new BoardObject[ROWS][COLS];
+        mLevel = new Level();
+        initBoard();
+        int count = 0;
+        for (int i = 0; i < mMirrors.length; i++) {
+            if (mMirrors[i] != null) {
+                int row = mMirrors[i].getmRowIndex();
+                int col = mMirrors[i].getmColumnIndex();
+                mTiles[row][col] = mMirrors[i];
+                count++;
+            }
+        }
+        mLevel.setNumberOfMirrors(count);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Creator() {
+        @Override
+        public Object createFromParcel(Parcel source) {
+            return new BoardModel(source);
+        }
+
+        @Override
+        public Object[] newArray(int size) {
+            return new Object[size];
+        }
+    };
+
+    public BoardModel() {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = new Level();
         initBoard();
@@ -33,8 +80,7 @@ public class BoardModel {
         mMirrorBackStack = new Stack<>();
     }
 
-    public BoardModel(Context context, Level level) {
-        this.mContext = context;
+    public BoardModel(Level level) {
         this.mTiles = new BoardObject[ROWS][COLS];
         this.mLevel = level;
         initBoard();
@@ -42,6 +88,14 @@ public class BoardModel {
         mLaserSegments.add(new Laser(this));
         mMirrors = new Mirror[mLevel.getNumberOfAllowedMirrors()];
         mMirrorBackStack = new Stack<>();
+    }
+
+    public RectF getmBoardDimension() {
+        return mBoardDimension;
+    }
+
+    public void setmBoardDimension(RectF dimension) {
+        this.mBoardDimension = dimension;
     }
 
     public BoardObject[][] getObjects() {
@@ -89,11 +143,11 @@ public class BoardModel {
             for (int j = 0; j < mTiles[i].length; j++) {
 
                 if (mLevel.getObjectLayer()[i][j] == 'O') {
-                    mTiles[i][j] = new Obstacle(mContext, i, j);
+                    mTiles[i][j] = new Obstacle(i, j);
                 } else if (mLevel.getObjectLayer()[i][j] == 'T') {
-                    mTiles[i][j] = new Target(mContext, i, j);
+                    mTiles[i][j] = new Target(i, j);
                 } else {
-                    mTiles[i][j] = new Air(mContext, i, j);
+                    mTiles[i][j] = new Air(i, j);
                 }
             }
         }
@@ -103,9 +157,9 @@ public class BoardModel {
         mLevel.putMirror(r, c);
 
         if (mMirrorBackStack.empty())
-            mTiles[r][c] = new Mirror(mContext, r, c, mLevel.getNumberOfMirrors());
+            mTiles[r][c] = new Mirror(r, c, mLevel.getNumberOfMirrors());
         else
-            mTiles[r][c] = new Mirror(mContext, r, c, mMirrorBackStack.pop());
+            mTiles[r][c] = new Mirror(r, c, mMirrorBackStack.pop());
 
         Mirror mirror = (Mirror) mTiles[r][c];
         mMirrors[mirror.getmId() - 1] = mirror;
@@ -124,7 +178,7 @@ public class BoardModel {
         mMirrorBackStack.push(id);
         mMirrors[id - 1] = null;
 
-        mTiles[r][c] = new Air(mContext, r, c);
+        mTiles[r][c] = new Air(r, c);
 
         Log.d(TAG, mMirrorBackStack.toString());
         Log.d(TAG, Arrays.toString(mMirrors));

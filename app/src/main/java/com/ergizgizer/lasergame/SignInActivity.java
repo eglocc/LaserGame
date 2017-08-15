@@ -1,12 +1,15 @@
 package com.ergizgizer.lasergame;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -36,6 +39,8 @@ public class SignInActivity extends AppCompatActivity implements MyStaticVariabl
     private static final String TAG = SignInActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 9001;
 
+    private ProgressDialog mProgressDialog;
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -45,11 +50,18 @@ public class SignInActivity extends AppCompatActivity implements MyStaticVariabl
     private CallbackManager mCallbackManager;
     private LoginButton mFacebookLoginButton;
 
+    private EditText mEmailField;
+    private EditText mPasswordField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
+        mEmailField = (EditText) findViewById(R.id.set_username);
+        mPasswordField = (EditText) findViewById(R.id.set_password);
+        findViewById(R.id.create_account_button).setOnClickListener(this);
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -144,55 +156,56 @@ public class SignInActivity extends AppCompatActivity implements MyStaticVariabl
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+        hideProgressDialog();
     }
 
     private void createAccount(String email, String password) {
         Log.d(TAG, sCreateAccount + email);
-        /*if(!validateForm()) {
+        if (!validateForm()) {
             return;
-        }*/
+        }
 
-        //showProgressDialog();
+        showProgressDialog();
 
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(TAG, sCreateUserWithEmailOnComplete + task.isSuccessful());
-
-                // If sign in fails, display a message to the user. If sign in succeeds
-                // the auth state listener will be notified and logic to handle the
-                // signed in user can be handled in the listener.
-                if (!task.isSuccessful()) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, sCreateUserWithEmailSuccess);
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    sendEmailVerification();
+                    updateUI(user);
+                } else {
+                    Log.w(TAG, getsCreateUserWithEmailFailed, task.getException());
                     Toast.makeText(SignInActivity.this, R.string.auth_failed, Toast.LENGTH_SHORT).show();
                 }
 
-                //hideProgressDialog();
+                hideProgressDialog();
             }
         });
     }
 
     private void signIn(String email, String password) {
         Log.d(TAG, sSignIn + email);
-        /*if(!validateForm()) {
+        if (!validateForm()) {
             return;
-        }*/
+        }
 
-        //showProgressDialog();
+        showProgressDialog();
 
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(TAG, sSignInWithEmailOnComplete + task.isSuccessful());
-
-                // If sign in fails, display a message to the user. If sign in succeeds
-                // the auth state listener will be notified and logic to handle the
-                // signed in user can be handled in the listener.
-                if (!task.isSuccessful()) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, sSignInWithEmailSuccess);
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    updateUI(user);
+                } else {
                     Log.w(TAG, sSignInWithEmailFailed, task.getException());
                     Toast.makeText(SignInActivity.this, R.string.auth_failed, Toast.LENGTH_SHORT).show();
                 }
 
-                //hideProgressDialog();
+                hideProgressDialog();
             }
         });
     }
@@ -255,7 +268,13 @@ public class SignInActivity extends AppCompatActivity implements MyStaticVariabl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.google_sign_in_button:
-                //signIn();
+                signIn();
+                break;
+            case R.id.create_account_button:
+                createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                break;
+            case R.id.sign_in_button:
+                signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
                 break;
         }
     }
@@ -263,5 +282,64 @@ public class SignInActivity extends AppCompatActivity implements MyStaticVariabl
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    private void sendEmailVerification() {
+        final FirebaseUser user = mAuth.getCurrentUser();
+        user.sendEmailVerification().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(SignInActivity.this, sVerificationEmailSentTo + user.getEmail(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e(TAG, sSendEmailVerification, task.getException());
+                    Toast.makeText(SignInActivity.this, sSendVerificationEmailFailed, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private boolean validateForm() {
+        boolean valid = true;
+        String email = mEmailField.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            mEmailField.setError("Required.");
+            valid = false;
+        } else {
+            mEmailField.setError(null);
+        }
+
+        String password = mPasswordField.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            mPasswordField.setError("Required.");
+            valid = false;
+        } else {
+            mPasswordField.setError(null);
+        }
+
+        return valid;
+    }
+
+    private void updateUI(FirebaseUser user) {
+        hideProgressDialog();
+        if (user != null) {
+            Intent i = new Intent(SignInActivity.this, MenuActivity.class);
+            i.putExtra("user", user.getUid());
+            startActivity(i);
+        }
+    }
+
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setIndeterminate(true);
+        }
+        mProgressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
     }
 }

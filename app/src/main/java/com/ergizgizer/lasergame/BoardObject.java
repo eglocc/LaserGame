@@ -1,27 +1,46 @@
 package com.ergizgizer.lasergame;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Parcel;
 import android.util.Log;
 
 public abstract class BoardObject extends RectF implements MyStaticVariables {
 
 	private static final String TAG = BoardObject.class.getSimpleName();
 
-	private Context mContext;
 	private final int mRowIndex;
 	private final int mColumnIndex;
 	private final String mCode;
 
-	private Bitmap mIcon;
 	private final Paint mBackgroundColor;
 
-	public BoardObject(Context context, int rowIndex, int columnIndex) {
-		this.mContext = context;
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		super.writeToParcel(dest, flags);
+		dest.writeInt(mRowIndex);
+		dest.writeInt(mColumnIndex);
+		dest.writeString(mCode);
+
+	}
+
+	BoardObject(Parcel source) {
+		mRowIndex = source.readInt();
+		mColumnIndex = source.readInt();
+		mCode = source.readString();
+		this.mBackgroundColor = new Paint();
+		mBackgroundColor.setColor(isDark() ? Color.BLACK : Color.WHITE);
+	}
+
+	public BoardObject(int rowIndex, int columnIndex) {
 		this.mRowIndex = rowIndex;
 		this.mColumnIndex = columnIndex;
 		this.mCode = ("" + (char) ('A' + mColumnIndex) + (mRowIndex + 1));
@@ -56,14 +75,6 @@ public abstract class BoardObject extends RectF implements MyStaticVariables {
 
 	public float getHeight() {
 		return bottom - top;
-	}
-
-	public Bitmap getmIcon() {
-		return mIcon;
-	}
-
-	public void setmIcon(Bitmap mIcon) {
-		this.mIcon = mIcon;
 	}
 
 	public void draw(Context context, final Canvas canvas) {

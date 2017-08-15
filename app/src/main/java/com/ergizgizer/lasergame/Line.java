@@ -1,6 +1,8 @@
 package com.ergizgizer.lasergame;
 
 import android.graphics.PointF;
+import android.graphics.RectF;
+import android.os.Parcel;
 
 import java.util.ArrayList;
 
@@ -11,6 +13,7 @@ public class Line {
     protected float x2;
     protected float y2;
 
+
     enum Direction {
         UPWARDS_LEFT, UPWARDS_RIGHT, DOWNWARDS_LEFT, DOWNWARDS_RIGHT, CONSTANT_LEFT,
         CONSTANT_RIGHT, CONSTANT_UP, CONSTANT_DOWN, POINT
@@ -20,6 +23,10 @@ public class Line {
     private Direction mDirection;
 
     public Line() {
+    }
+
+    Line(Parcel source) {
+
     }
 
     public Line(float x1, float y1, float x2, float y2) {
@@ -40,11 +47,11 @@ public class Line {
         return mDirection;
     }
 
-    public void setmDirection(float startX, float endX, float startY, float endY) {
+    public void setmDirection(RectF boardDimension) {
         if (y1 > y2) {
-            if (x1 == startX)
+            if (x1 == boardDimension.left)
                 mDirection = Direction.UPWARDS_LEFT;
-            else if (x1 == endX)
+            else if (x1 == boardDimension.right)
                 mDirection = Direction.UPWARDS_RIGHT;
             else {
                 if (x1 > x2)

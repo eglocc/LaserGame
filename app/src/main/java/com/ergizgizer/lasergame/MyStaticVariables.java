@@ -8,15 +8,22 @@ interface MyStaticVariables {
     int OUT_BOTTOM = 8;
 
     int sDefaultLaserAngle = 90;
+    String sLaserAngleKey = "laser_angle";
+    String sBoardModelKey = "board_model";
+    String sIsAllMirrorsDeployed = "is_all_mirrors_deployed";
 
     String sOnAuthStateChangedSignedIn = "onAuthStateChanged:signed_in:";
     String sOnAuthStateChangedSignedOut = "onAuthStateChanged:signed_out";
 
     String sCreateAccount = "createAccount:";
     String sSignIn = "signIn";
-    String sCreateUserWithEmailOnComplete = "createUserWithEmail:onComplete:";
-    String sSignInWithEmailOnComplete = "signInWithEmail:onComplete:";
+    String sCreateUserWithEmailSuccess = "createUserWithEmail:success";
+    String getsCreateUserWithEmailFailed = "createUserWithEmail:failed";
+    String sSignInWithEmailSuccess = "signInWithEmail:success";
     String sSignInWithEmailFailed = "signInWithEmail:failed";
+    String sSendEmailVerification = "sendEmailVerification";
+    String sVerificationEmailSentTo = "Verification email sent to ";
+    String sSendVerificationEmailFailed = "Failed to send verification email.";
 
     String sFirebaseAuthWithGoogle = "firebaseAuthWithGoogle:";
 

@@ -14,7 +14,6 @@ public class MirrorAngleFragment extends Fragment {
 
     static final String TAG = MirrorAngleFragment.class.getSimpleName();
 
-    private Context mContext;
     private AngleListener mController;
 
     private SeekBar[] mMirrorAngleSeekBars;
@@ -30,19 +29,14 @@ public class MirrorAngleFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mContext = context;
         mController = (AngleListener) context;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private void onPrepare(View view) {
         mMirrorAngleSeekBars = new SeekBar[mMirrors.length];
         mAnglesInDegrees = new TextView[mMirrors.length];
         mAngleSliders = new AngleSlider[mMirrors.length];
-    }
 
-    private void onPrepare(View view) {
         for (int i = 0; i < mMirrors.length; i++) {
             switch (i) {
                 case 0:
@@ -67,7 +61,26 @@ public class MirrorAngleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.mirror_angle_sliders, container, false);
+        if (savedInstanceState != null) {
+            mMirrors = (Mirror[]) savedInstanceState.getParcelableArray("mirrors");
+        }
         onPrepare(view);
+        if (savedInstanceState != null) {
+            for (int i = 0; i < mMirrors.length; i++) {
+                mAnglesInDegrees[i].setText(savedInstanceState.getString("mirror_" + (i + 1) + "_text"));
+                mMirrorAngleSeekBars[i].setProgress(savedInstanceState.getInt("mirror_" + (i + 1) + "_progress"));
+            }
+        }
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArray("mirrors", mMirrors);
+        for (int i = 0; i < mMirrors.length; i++) {
+            outState.putString("mirror_" + (i + 1) + "_text", mAnglesInDegrees[i].getText().toString());
+            outState.putInt("mirror_" + (i + 1) + "_progress", mMirrorAngleSeekBars[i].getProgress());
+        }
     }
 }

@@ -10,20 +10,23 @@ import android.view.ViewGroup;
 
 public class BoardFragment extends Fragment {
 
-    private static final String TAG = BoardFragment.class.getSimpleName();
+    static final String TAG = BoardFragment.class.getSimpleName();
 
-    private Context mContext;
     private BoardModel mBoardModel;
     private ChessBoard mBoard;
+    private boolean mLaserWasOn;
 
     public void setmBoard(BoardModel model) {
         this.mBoardModel = model;
     }
 
+    public void setmLaserWasOn(boolean wasOn) {
+        this.mLaserWasOn = wasOn;
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mContext = context;
     }
 
     @Nullable
@@ -32,6 +35,7 @@ public class BoardFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_board, container, false);
         mBoard = (ChessBoard) view.findViewById(R.id.board);
         mBoard.setmBoardModel(mBoardModel);
+        mBoard.setmLaserWasOn(mLaserWasOn);
         return view;
     }
 }

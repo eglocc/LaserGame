@@ -21,7 +21,9 @@ public class ChessBoard extends View {
 
         void pickMirror(int row, int col);
 
-        void requestForLaser(int row, int col, float x0, float y0, float x1, float y1);
+        void requestForLaser(int row, int col);
+
+        void setBoardDimension(float x1, float x2, float y1, float y2);
     }
 
     private Context mContext;
@@ -32,6 +34,7 @@ public class ChessBoard extends View {
     private static float x2;
     private static float y2;
     private float mTileSize;
+    private boolean mLaserWasOn;
 
     public ChessBoard(Context context) {
         super(context);
@@ -49,9 +52,8 @@ public class ChessBoard extends View {
         this.mBoardModel = model;
     }
 
-    private void setMargins() {
-        int measuredWidth = getMeasuredWidth();
-
+    public void setmLaserWasOn(boolean wasOn) {
+        this.mLaserWasOn = wasOn;
     }
 
 
@@ -68,12 +70,11 @@ public class ChessBoard extends View {
         y1 = 0;
         x2 = x1 + mTileSize * COLS;
         y2 = y1 + mTileSize * ROWS;
+        mController.setBoardDimension(x1, x2, y1, y2);
     }
 
     @Override
     protected void onDraw(final Canvas canvas) {
-        //Log.d(TAG, Integer.toString(getWidth()));
-        //Log.d(TAG, Integer.toString(getHeight()));
         mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
         ArrayList<Laser> laserSegments = mBoardModel.getmLaserSegments();
         for (Laser laser : laserSegments) {
@@ -101,7 +102,7 @@ public class ChessBoard extends View {
                 mController.pickMirror(row, col);
             } else if ((row == 0 || row == 9 || col == 0 || col == 9)
                     && level.isAllMirrorsDeployed()) {
-                mController.requestForLaser(row, col, x1, y1, x2, y2);
+                mController.requestForLaser(row, col);
             }
         }
 
@@ -116,5 +117,6 @@ public class ChessBoard extends View {
     private int getTileSizeHeight() {
         return getMeasuredHeight() / ROWS;
     }
+
 
 }

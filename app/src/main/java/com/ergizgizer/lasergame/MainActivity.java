@@ -1,6 +1,8 @@
 package com.ergizgizer.lasergame;
 
 import android.app.FragmentTransaction;
+import android.graphics.BitmapFactory;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,16 +16,33 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
     private BoardModel mBoardModel;
     private BoardFragment mBoardFragment;
     private LaserAngleFragment mLaserAngleFragment;
-    private int mCurrentLaserAngle = sDefaultLaserAngle;
+    private int mCurrentLaserAngle;
+    private RectF mCurrentBoardDimension;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mBoardModel = new BoardModel(this);
+        Target.sTargetIcon = BitmapFactory.decodeResource(getResources(), R.drawable.t56);
+        Obstacle.sObstacleIcon = BitmapFactory.decodeResource(getResources(), R.drawable.p56);
+        Mirror.sUnrotatedMirrorIcon = BitmapFactory.decodeResource(getResources(), R.drawable.s56);
+
+
+        if (savedInstanceState == null) {
+            mBoardModel = new BoardModel();
+            mCurrentLaserAngle = sDefaultLaserAngle;
+        }
+
         mLaserAngleFragment = (LaserAngleFragment) getFragmentManager().findFragmentById(R.id.laser_angle_fragment);
-        mLaserAngleFragment.setmLaser(mBoardModel.getmLaserSegment(0));
+
+        if (savedInstanceState != null) {
+            mBoardModel = savedInstanceState.getParcelable(sBoardModelKey);
+            mCurrentLaserAngle = savedInstanceState.getInt(sLaserAngleKey);
+        }
+
+        Laser sourceSegment = mBoardModel.getmLaserSegment(0);
+        mLaserAngleFragment.setmLaser(sourceSegment);
 
         updateBoard();
     }
@@ -31,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
     private void updateBoard() {
         mBoardFragment = new BoardFragment();
         mBoardFragment.setmBoard(mBoardModel);
-        FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.board_container, mBoardFragment);
+        mBoardFragment.setmLaserWasOn(mBoardModel.getmLaserSegment(0).isOn());
+        FragmentTransaction ft = getFragmentManager().beginTransaction().replace(R.id.board_container, mBoardFragment, BoardFragment.TAG);
         ft.commit();
     }
 
@@ -71,15 +91,16 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
     }
 
     @Override
-    public void requestForLaser(int row, int col, float x0, float y0, float x1, float y1) {
+    public void requestForLaser(int row, int col) {
         Log.d(TAG, sLaserRequested + "[" + sRow + row + "," + sColumn + col + "]");
         ArrayList<Laser> segments = mBoardModel.getmLaserSegments();
         Laser sourceSegment = segments.get(0);
+        //sourceSegment.setmAreaDimension(mCurrentBoardDimension);
         boolean wasOn = sourceSegment.isOn();
         if (!wasOn) {
             sourceSegment.setmSourceTile(row, col);
             sourceSegment.setAngle(mCurrentLaserAngle);
-            sourceSegment.initLaser(x0, x1, y0, y1);
+            //sourceSegment.initLaser();
         } else {
             Laser newLaser = new Laser(mBoardModel);
             newLaser.setAngle(mCurrentLaserAngle);
@@ -88,6 +109,18 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
         }
         sourceSegment.setOn(!wasOn);
         updateBoard();
+    }
+
+    @Override
+    public void setBoardDimension(float x1, float x2, float y1, float y2) {
+        mCurrentBoardDimension = new RectF(x1, y1, x2, y2);
+        mBoardModel.setmBoardDimension(mCurrentBoardDimension);
+        ArrayList<Laser> segments = mBoardModel.getmLaserSegments();
+        Laser sourceSegment = segments.get(0);
+        sourceSegment.setmAreaDimension(mCurrentBoardDimension);
+        if (sourceSegment.isOn()) {
+            sourceSegment.initLaser();
+        }
     }
 
     @Override
@@ -100,5 +133,13 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
         Mirror mirror = mBoardModel.getmMirrors()[id];
         mirror.setAngle(angle);
         updateBoard();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt(sLaserAngleKey, mCurrentLaserAngle);
+        savedInstanceState.putParcelable(sBoardModelKey, mBoardModel);
+        savedInstanceState.putBoolean(sIsAllMirrorsDeployed, mBoardModel.getmLevel().isAllMirrorsDeployed());
     }
 }

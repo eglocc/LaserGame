@@ -23,7 +23,12 @@ public class AngleSlider implements SeekBar.OnSeekBarChangeListener {
         this.mMirrorId = id;
         this.mAngleText = tv;
         this.mListener = angleListener;
-        this.mAngle = object.getAngle();
+        if (object != null)
+            this.mAngle = object.getAngle();
+    }
+
+    public int getmAngle() {
+        return mAngle;
     }
 
     //public void setmAngle(int angle) { this.mAngle = angle; }

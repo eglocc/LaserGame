@@ -4,20 +4,24 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.RectF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static android.R.attr.endX;
+import static android.R.attr.endY;
+import static android.R.attr.startX;
 import static com.ergizgizer.lasergame.Laser.IntersectionDirection.FROM_BOTTOM;
 import static com.ergizgizer.lasergame.Laser.IntersectionDirection.FROM_LEFT;
 import static com.ergizgizer.lasergame.Laser.IntersectionDirection.FROM_RIGHT;
 import static com.ergizgizer.lasergame.Laser.IntersectionDirection.FROM_TOP;
-import static com.ergizgizer.lasergame.Line.Direction.DOWNWARDS_LEFT;
-import static com.ergizgizer.lasergame.Line.Direction.UPWARDS_LEFT;
 
-public class Laser extends Line implements Rotatable, MyStaticVariables {
+public class Laser extends Line implements Rotatable, Parcelable, MyStaticVariables {
 
     private static final String TAG = Laser.class.getSimpleName();
 
@@ -30,6 +34,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
     private boolean isOn;
     private BoardModel mBoard;
     private BoardObject[][] mArea;
+    private RectF mAreaDimension;
     private BoardObject mSourceTile;
     private ArrayList<BoardObject> mTilesIAmFlowingUpon;
     private BoardObject mBlockingTile;
@@ -37,6 +42,39 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
     private IntersectionDirection mIntersectionDirection;
     private PointF mIntersectionPoint;
     private PointF mBlockingPoint;
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mAngle);
+        dest.writeByte((byte) (isOn ? 1 : 0));
+        dest.writeParcelable(mSourceTile, flags);
+        dest.writeParcelable(mBlockingTile, flags);
+    }
+
+    private Laser(Parcel source) {
+        super(source);
+        mAngle = source.readInt();
+        isOn = source.readByte() != 0;
+        mSourceTile = source.readParcelable(BoardObject.class.getClassLoader());
+        mBlockingTile = source.readParcelable(BoardObject.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator CREATOR = new Creator() {
+        @Override
+        public Object createFromParcel(Parcel source) {
+            return new Laser(source);
+        }
+
+        @Override
+        public Object[] newArray(int size) {
+            return new Object[size];
+        }
+    };
 
     public Laser(BoardModel model) {
         super();
@@ -47,6 +85,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         mBeam.setStyle(Paint.Style.STROKE);
         this.mBoard = model;
         this.mArea = model.getObjects();
+        this.mAreaDimension = model.getmBoardDimension();
     }
 
     // Public getters and setters
@@ -98,6 +137,14 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         this.mArea = area;
     }
 
+    public void setmAreaDimension(RectF dimension) {
+        this.mAreaDimension = dimension;
+    }
+
+    public BoardObject getmSourceTile() {
+        return mSourceTile;
+    }
+
     public void setmSourceTile(int row, int col) {
         this.mSourceTile = mArea[row][col];
     }
@@ -120,47 +167,43 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
 
     /** Main function for laser, combines all calculations
      *
-     * @param startX Left of board
-     * @param endX Right of board
-     * @param startY Top of board
-     * @param endY Bottom of board
      */
-    public void initLaser(final float startX, final float endX, final float startY, final float endY) {
+    public void initLaser() {
         int row = mSourceTile.getmRowIndex();
         int col = mSourceTile.getmColumnIndex();
         if (col == 0) {
             mRelativeAngle = mAngle + 270;
-            setLine(mSourceTile.left, mSourceTile.centerY(), endX, startX, endX, startY, endY);
+            setLine(mSourceTile.left, mSourceTile.centerY(), mAreaDimension.right);
         } else if (col == 9) {
             mRelativeAngle = (mAngle + 270) * (-1);
-            setLine(mSourceTile.right, mSourceTile.centerY(), startX, startX, endX, startY, endY);
+            setLine(mSourceTile.right, mSourceTile.centerY(), mAreaDimension.left);
         } else if (row == 0) {
             mRelativeAngle = mAngle;
             if (mAngle == 90) {
-                setLine(mSourceTile.centerX(), mSourceTile.top, mSourceTile.centerX(), endY);
+                setLine(mSourceTile.centerX(), mSourceTile.top, mSourceTile.centerX(), mAreaDimension.bottom);
             } else if (mAngle > 90 && mAngle < 180) {
-                setLine(mSourceTile.centerX(), mSourceTile.top, startX, startX, endX, startY, endY);
+                setLine(mSourceTile.centerX(), mSourceTile.top, mAreaDimension.left);
             } else {
-                setLine(mSourceTile.centerX(), mSourceTile.top, endX, startX, endX, startY, endY);
+                setLine(mSourceTile.centerX(), mSourceTile.top, mAreaDimension.right);
             }
         } else if (row == 9) {
             if (mAngle == 90) {
                 mRelativeAngle = mAngle;
-                setLine(mSourceTile.centerX(), mSourceTile.bottom, mSourceTile.centerX(), startY);
+                setLine(mSourceTile.centerX(), mSourceTile.bottom, mSourceTile.centerX(), mAreaDimension.top);
             } else if (mAngle > 90 && mAngle < 180) {
                 mRelativeAngle = mAngle * (-1);
-                setLine(mSourceTile.centerX(), mSourceTile.bottom, startX, startX, endX, startY, endY);
+                setLine(mSourceTile.centerX(), mSourceTile.bottom, mAreaDimension.left);
             } else {
                 mRelativeAngle = mAngle * (-1);
-                setLine(mSourceTile.centerX(), mSourceTile.bottom, endX, startX, endX, startY, endY);
+                setLine(mSourceTile.centerX(), mSourceTile.bottom, mAreaDimension.right);
             }
         }
-        setmDirection(startX, endX, startY, endY);
-        mBlockingTile = getBlockingTile(startX, endX, startY, endY);
+        setmDirection(mAreaDimension);
+        mBlockingTile = getBlockingTile();
         Log.d(TAG, getmDirection().toString());
-        mIntersectionPoint = getIntersectionPoint(startX, endX, startY, endY);
+        mIntersectionPoint = getIntersectionPoint();
         mBlockingPoint = getBlockingPoint();
-        evaluateLaserState(startX, endX, startY, endY);
+        evaluateLaserState();
     }
 
     // Private methods
@@ -168,31 +211,28 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
     /**
      * Helper method for calculating blocking objects
      *
-     * @param startX Left of board
-     * @param endX   Right of board
-     * @param startY Top of board
-     * @param endY   Bottom of board
      */
-    private void evaluateLaserState(final float startX, final float endX, final float startY, final float endY) {
+    private void evaluateLaserState() {
         if (mBlockingTile != null && mBlockingPoint != null) {
             setLine(x1, y1, mBlockingPoint.x, mBlockingPoint.y);
             if (mBlockingTile instanceof Mirror) {
-                reflect(mBlockingPoint.x, mBlockingPoint.y, startX, endX, startY, endY);
+                reflect();
             }
         }
     }
 
-    private void reflect(final float fromX, final float fromY, final float startX, final float endX, final float startY, final float endY) {
+    private void reflect() {
         Log.d(TAG, "reflectedWith:" + mAngle + "°");
+        Mirror mirror = (Mirror) mBlockingTile;
         Laser newSegment = new Laser(mBoard);
         mBoard.addNewLaserSegment(newSegment);
         newSegment.setOn(true);
         switch (mIntersectionDirection) {
             case FROM_LEFT:
-                newSegment.setmSourceTile(mBlockingTile);
-                newSegment.setAngle(mAngle);
-                newSegment.setLine(mBlockingPoint.x, mBlockingPoint.y, startX, startX, endX, startY, endY);
-                setLine(mSourceTile.right, mSourceTile.centerY(), startX, startX, endX, startY, endY);
+                newSegment.setmSourceTile(this.mBlockingTile);
+                newSegment.setAngle(this.mAngle);
+                newSegment.setmRelativeAngle((this.mAngle + 270) * (-1));
+                newSegment.setLine(this.mBlockingPoint.x, this.mBlockingPoint.y, mAreaDimension.left);
         }
 
 
@@ -211,20 +251,20 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         mPoints = getPointsInInterval(x1, x2);
     }
 
-    private void setLine(float x1, float y1, float x2, float startX, float endX, float startY, float endY) {
+    private void setLine(float x1, float y1, float x2) {
         super.setLine(x1, y1, x2, getSlope() * (x2 - x1) + y1);
-        if (this.y2 > endY) {
-            this.y2 = endY;
+        if (this.y2 > mAreaDimension.bottom) {
+            this.y2 = mAreaDimension.bottom;
             this.x2 = (this.y2 - this.y1) / getSlope() + this.x1;
-        } else if (this.y2 < startY) {
-            this.y2 = startY;
+        } else if (this.y2 < mAreaDimension.top) {
+            this.y2 = mAreaDimension.top;
             this.x2 = (this.y2 - this.y1) / getSlope() + this.x1;
-        } else if (this.x2 > endX) {
-            this.x2 = endX;
+        } else if (this.x2 > mAreaDimension.right) {
+            this.x2 = mAreaDimension.right;
             this.y2 = (this.x2 - this.x1) * getSlope() + this.y1;
 
-        } else if (this.x2 < startX) {
-            this.x2 = startX;
+        } else if (this.x2 < mAreaDimension.left) {
+            this.x2 = mAreaDimension.left;
             this.y2 = (this.x2 - this.x1) * getSlope() + this.y1;
         }
         mPoints = getPointsInInterval(x1, x2);
@@ -298,22 +338,18 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
 
     /** This method finds all tiles, on which the laser is beamed. I was discouraged to use that.
      *
-     * @param startX Left of board
-     * @param endX Right of board
-     * @param startY Top of board
-     * @param endY Bottom of board
      * @return
      */
-    private ArrayList<BoardObject> getTileListLaserIsOn(final float startX, final float endX, final float startY, final float endY) {
+    private ArrayList<BoardObject> getTileListLaserIsOn() {
         ArrayList<BoardObject> laserIsOn = new ArrayList<>();
-        if (y1 == startY || y1 == endY) {
+        if (y1 == mAreaDimension.top || y1 == mAreaDimension.bottom) {
             for (int i = 0; i < mArea.length; i++) {
                 for (int j = 0; j < mArea[i].length; j++) {
                     if (intersects(mArea[i][j]))
                         laserIsOn.add(mArea[i][j]);
                 }
             }
-        } else if (x1 == startX || x1 == endX) {
+        } else if (x1 == mAreaDimension.left || x1 == mAreaDimension.right) {
             for (int i = 0; i < mArea.length; i++) {
                 for (int j = 0; j < mArea[i].length; j++) {
                     if (intersects(mArea[j][i]))
@@ -326,16 +362,12 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
 
     /** Self explanatory, but in case of emergency: This method finds the blocking tile.
      *
-     * @param startX Left of board
-     * @param endX Right of board
-     * @param startY Top of board
-     * @param endY Bottom of board
      * @return
      */
     @Nullable
-    private BoardObject getBlockingTile(final float startX, final float endX, final float startY, final float endY) {
+    private BoardObject getBlockingTile() {
         BoardObject blockingObject = null;
-        if (x1 == startX) {
+        if (x1 == mAreaDimension.left) {
             switch (getmDirection()) {
                 case DOWNWARDS_RIGHT:
                     for (int i = 0; i < mArea.length; i++) {
@@ -373,7 +405,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                 default:
                     Log.d(TAG, "What are the odds?");
             }
-        } else if (y1 == startY) {
+        } else if (y1 == mAreaDimension.top) {
             switch (getmDirection()) {
                 case DOWNWARDS_RIGHT:
                     for (int i = 0; i < mArea.length; i++) {
@@ -411,7 +443,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                 default:
                     Log.d(TAG, "What are the odds?");
             }
-        } else if (x1 == endX) {
+        } else if (x1 == mAreaDimension.right) {
             switch (getmDirection()) {
                 case DOWNWARDS_LEFT:
                     for (int i = mArea.length - 1; i >= 0; i--) {
@@ -449,7 +481,7 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
                 default:
                     Log.d(TAG, "What are the odds?");
             }
-        } else if (y1 == endY) {
+        } else if (y1 == mAreaDimension.bottom) {
             switch (getmDirection()) {
                 case UPWARDS_RIGHT:
                     for (int i = mArea.length - 1; i >= 0; i--) {
@@ -494,14 +526,10 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
 
     /** This method finds the intersection point of the laser and the blocking tile.
      *
-     * @param startX Left of board
-     * @param endX Right of board
-     * @param startY Top of board
-     * @param endY Bottom of board
      * @return
      */
     @Nullable
-    private PointF getIntersectionPoint(final float startX, final float endX, final float startY, final float endY) {
+    private PointF getIntersectionPoint() {
         PointF intersectionPoint = null;
 
         if (mBlockingTile == null) {
@@ -588,82 +616,54 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         return intersectionPoint;
     }
 
+    /**
+     * Uses blocking point algorithm for laser
+     *
+     * @return
+     */
     private PointF getBlockingPoint() {
         PointF blockingPoint = null;
 
         if (mBlockingTile != null) {
             if (mIntersectionPoint.x == mBlockingTile.left) {
-                Iterator<PointF> it = getPointsInInterval(mBlockingTile.left, mBlockingTile.right).iterator();
-                while (it.hasNext()) {
-                    PointF p = it.next();
-                    if (mBlockingTile.contains(p.x, p.y)) {
-                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
-                            blockingPoint = p;
-                            mIntersectionDirection = FROM_LEFT;
-                            break;
-                        }
-                    }
-                }
+                blockingPoint = findBlockingPointInInterval(mBlockingTile.left, mBlockingTile.right, FROM_LEFT);
             } else if (mIntersectionPoint.x == mBlockingTile.right) {
-                Iterator<PointF> it = getPointsInInterval(mBlockingTile.right, mBlockingTile.left).iterator();
-                while (it.hasNext()) {
-                    PointF p = it.next();
-                    if (mBlockingTile.contains(p.x, p.y)) {
-                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
-                            blockingPoint = p;
-                            mIntersectionDirection = FROM_RIGHT;
-                            break;
-                        }
-                    }
+                blockingPoint = findBlockingPointInInterval(mBlockingTile.right, mBlockingTile.left, FROM_RIGHT);
+            } else if (mIntersectionPoint.y == mBlockingTile.top) {
+                switch (getmDirection()) {
+                    case DOWNWARDS_RIGHT:
+                        blockingPoint = findBlockingPointInInterval(mIntersectionPoint.x, mBlockingTile.right, FROM_TOP);
+                        break;
+                    case DOWNWARDS_LEFT:
+                        blockingPoint = findBlockingPointInInterval(mIntersectionPoint.x, mBlockingTile.left, FROM_TOP);
+                        break;
+                    case CONSTANT_DOWN:
+                        blockingPoint = findBlockingPointInInterval(mIntersectionPoint.x, mIntersectionPoint.x, FROM_TOP);
+                        break;
+                    default:
+                        Log.d(TAG, "I made a terrible mistake!");
                 }
-            } else if ((mIntersectionPoint.y == mBlockingTile.top || mIntersectionPoint.y == mBlockingTile.bottom)
-                    && (getmDirection() == Direction.DOWNWARDS_RIGHT || getmDirection() == Direction.UPWARDS_RIGHT)) {
-                Iterator<PointF> it = getPointsInInterval(mIntersectionPoint.x, mBlockingTile.right).iterator();
-                while (it.hasNext()) {
-                    PointF p = it.next();
-                    if (mBlockingTile.contains(p.x, p.y)) {
-                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
-                            blockingPoint = p;
-                            if (mIntersectionPoint.y == mBlockingTile.top)
-                                mIntersectionDirection = FROM_TOP;
-                            else if (mIntersectionPoint.y == mBlockingTile.bottom)
-                                mIntersectionDirection = FROM_BOTTOM;
-                            break;
+            } else if (mIntersectionPoint.y == mBlockingTile.bottom) {
+                switch (getmDirection()) {
+                    case UPWARDS_RIGHT:
+                        if (x1 == endX) {
+                            blockingPoint = findBlockingPointInInterval(mIntersectionPoint.x, mBlockingTile.left, FROM_BOTTOM);
+                        } else if (y1 == endY) {
+                            blockingPoint = findBlockingPointInInterval(mIntersectionPoint.x, mBlockingTile.right, FROM_BOTTOM);
                         }
-                    }
-                }
-            } else if ((mIntersectionPoint.y == mBlockingTile.
-                    top || mIntersectionPoint.y == mBlockingTile.bottom)
-                    && (getmDirection() == DOWNWARDS_LEFT || getmDirection() == UPWARDS_LEFT)) {
-                Iterator<PointF> it = getPointsInInterval(mIntersectionPoint.x, mBlockingTile.left).iterator();
-                while (it.hasNext()) {
-                    PointF p = it.next();
-                    if (mBlockingTile.contains(p.x, p.y)) {
-                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
-                            blockingPoint = p;
-                            if (mIntersectionPoint.y == mBlockingTile.top)
-                                mIntersectionDirection = FROM_TOP;
-                            else if (mIntersectionPoint.y == mBlockingTile.bottom)
-                                mIntersectionDirection = FROM_BOTTOM;
-                            break;
+                        break;
+                    case UPWARDS_LEFT:
+                        if (x1 == startX) {
+                            blockingPoint = findBlockingPointInInterval(mIntersectionPoint.x, mBlockingTile.right, FROM_BOTTOM);
+                        } else if (y1 == endY) {
+                            blockingPoint = findBlockingPointInInterval(mIntersectionPoint.x, mBlockingTile.left, FROM_BOTTOM);
                         }
-                    }
-                }
-            } else if ((mIntersectionPoint.y == mBlockingTile.top || mIntersectionPoint.y == mBlockingTile.bottom)
-                    && (getmDirection() == Direction.CONSTANT_DOWN || getmDirection() == Direction.CONSTANT_UP)) {
-                Iterator<PointF> it = getPointsInInterval(mIntersectionPoint.x, mIntersectionPoint.x).iterator();
-                while (it.hasNext()) {
-                    PointF p = it.next();
-                    if (mBlockingTile.contains(p.x, p.y)) {
-                        if (!isTransparent(mBlockingTile.getmIcon(), (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
-                            blockingPoint = p;
-                            if (mIntersectionPoint.y == mBlockingTile.top)
-                                mIntersectionDirection = FROM_TOP;
-                            else if (mIntersectionPoint.y == mBlockingTile.bottom)
-                                mIntersectionDirection = FROM_BOTTOM;
-                            break;
-                        }
-                    }
+                        break;
+                    case CONSTANT_UP:
+                        blockingPoint = findBlockingPointInInterval(mIntersectionPoint.x, mIntersectionPoint.x, FROM_BOTTOM);
+                        break;
+                    default:
+                        Log.d(TAG, "I made a terrible mistake!");
                 }
             }
         }
@@ -671,11 +671,50 @@ public class Laser extends Line implements Rotatable, MyStaticVariables {
         return blockingPoint;
     }
 
+    /** Returns true if given pixel in Bitmap is transparent else false
+     *
+     * @param bitmap
+     * @param x
+     * @param y
+     * @return
+     */
     private static boolean isTransparent(Bitmap bitmap, int x, int y) {
         int pixel = bitmap.getPixel(x, y);
         if ((pixel >> 24) == 0) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Blocking point algorithm: searches a specific interval and returns first untransparent pixel/point
+     *
+     * @param x1
+     * @param x2
+     * @param d
+     * @return
+     */
+    private PointF findBlockingPointInInterval(final float x1, final float x2, IntersectionDirection d) {
+        PointF blockingPoint = null;
+        Iterator<PointF> it = getPointsInInterval(x1, x2).iterator();
+        while (it.hasNext()) {
+            PointF p = it.next();
+            if (mBlockingTile.contains(p.x, p.y)) {
+                Bitmap bitmap = null;
+                if (mBlockingTile instanceof Target) {
+                    bitmap = Target.sTargetIcon;
+                } else if (mBlockingTile instanceof Obstacle) {
+                    bitmap = Obstacle.sObstacleIcon;
+                } else if (mBlockingTile instanceof Mirror) {
+                    bitmap = ((Mirror) mBlockingTile).rotateBitmap();
+                }
+                if (!isTransparent(bitmap, (int) (p.x - mBlockingTile.left), (int) (p.y - mBlockingTile.top))) {
+                    blockingPoint = p;
+                    mIntersectionDirection = d;
+                    break;
+                }
+            }
+        }
+        return blockingPoint;
     }
 }
