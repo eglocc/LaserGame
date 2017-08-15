@@ -46,6 +46,7 @@ public class BoardModel implements Parcelable {
         mTiles = new BoardObject[ROWS][COLS];
         mLevel = new Level();
         initBoard();
+        mLaserSegments.get(0).initLaser();
         int count = 0;
         for (int i = 0; i < mMirrors.length; i++) {
             if (mMirrors[i] != null) {

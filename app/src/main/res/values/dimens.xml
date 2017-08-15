@@ -2,5 +2,6 @@
 <resources>
 
     <dimen name="margin_from_sides">8dp</dimen>
+    <dimen name="menu_button_text_size">20sp</dimen>
 
 </resources>

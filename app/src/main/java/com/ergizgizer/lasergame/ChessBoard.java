@@ -24,6 +24,8 @@ public class ChessBoard extends View {
         void requestForLaser(int row, int col);
 
         void setBoardDimension(float x1, float x2, float y1, float y2);
+
+        void targetHit();
     }
 
     private Context mContext;
@@ -76,10 +78,17 @@ public class ChessBoard extends View {
     @Override
     protected void onDraw(final Canvas canvas) {
         mBoardModel.drawBoard(mContext, canvas, mTileSize, x1, y1);
-        ArrayList<Laser> laserSegments = mBoardModel.getmLaserSegments();
-        for (Laser laser : laserSegments) {
-            if (laser != null && laser.isOn()) {
-                canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.getmBeam());
+        ArrayList<Laser> segments = mBoardModel.getmLaserSegments();
+        Laser sourceSegment = segments.get(0);
+        if (sourceSegment.isOn()) {
+            sourceSegment.initLaser();
+            for (Laser laser : segments) {
+                if (laser != null && laser.isOn()) {
+                    canvas.drawLine(laser.x1, laser.y1, laser.x2, laser.y2, laser.getmBeam());
+                    if (laser.isTargetHit()) {
+                        mController.targetHit();
+                    }
+                }
             }
         }
     }

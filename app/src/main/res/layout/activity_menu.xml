@@ -22,12 +22,56 @@
 
     <LinearLayout
         android:id="@+id/button_holder"
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="15dp"
         android:layout_below="@id/logo"
-        android:layout_centerHorizontal="true"
-        android:orientation="vertical">
+        android:layout_centerInParent="true"
+        android:gravity="center">
 
+        <Button
+            android:id="@+id/start_game"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/start_game"
+            android:textSize="@dimen/menu_button_text_size"
+            android:fontFamily="sans-serif-medium" />
+
+        <Button
+            android:id="@+id/settings"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/settings"
+            android:textSize="@dimen/menu_button_text_size"
+            android:fontFamily="sans-serif-medium" />
+
+        <Button
+            android:id="@+id/help_me"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/help"
+            android:textSize="@dimen/menu_button_text_size"
+            android:fontFamily="sans-serif-medium" />
+
+        <Button
+            android:id="@+id/credits"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/credits"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="@dimen/menu_button_text_size" />
+        -->
+
+        <!--
         <Button
             android:id="@+id/start_game"
             android:layout_width="wrap_content"
@@ -55,6 +99,7 @@
             android:layout_height="175dp"
             android:layout_marginTop="-90dp"
             android:background="@drawable/credits" />
+            -->
 
     </LinearLayout>
 

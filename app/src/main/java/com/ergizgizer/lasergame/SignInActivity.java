@@ -324,7 +324,6 @@ public class SignInActivity extends AppCompatActivity implements MyStaticVariabl
         hideProgressDialog();
         if (user != null) {
             Intent i = new Intent(SignInActivity.this, MenuActivity.class);
-            i.putExtra("user", user.getUid());
             startActivity(i);
         }
     }

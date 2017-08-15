@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
     private LaserAngleFragment mLaserAngleFragment;
     private int mCurrentLaserAngle;
     private RectF mCurrentBoardDimension;
+    private boolean mTargetHit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,9 +119,6 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
         ArrayList<Laser> segments = mBoardModel.getmLaserSegments();
         Laser sourceSegment = segments.get(0);
         sourceSegment.setmAreaDimension(mCurrentBoardDimension);
-        if (sourceSegment.isOn()) {
-            sourceSegment.initLaser();
-        }
     }
 
     @Override
@@ -133,6 +131,12 @@ public class MainActivity extends AppCompatActivity implements MyStaticVariables
         Mirror mirror = mBoardModel.getmMirrors()[id];
         mirror.setAngle(angle);
         updateBoard();
+    }
+
+    @Override
+    public void targetHit() {
+        Log.d(TAG, "target hit");
+        //TODO do whatever you wanna do
     }
 
     @Override

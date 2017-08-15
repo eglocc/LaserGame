@@ -32,6 +32,7 @@ public class Laser extends Line implements Rotatable, Parcelable, MyStaticVariab
     private int mAngle;
     private int mRelativeAngle; // Differs from angle, it is relative to the starting point
     private boolean isOn;
+    private boolean targetHit;
     private BoardModel mBoard;
     private BoardObject[][] mArea;
     private RectF mAreaDimension;
@@ -52,6 +53,7 @@ public class Laser extends Line implements Rotatable, Parcelable, MyStaticVariab
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mAngle);
         dest.writeByte((byte) (isOn ? 1 : 0));
+        dest.writeByte((byte) (targetHit ? 1 : 0));
         dest.writeParcelable(mSourceTile, flags);
         dest.writeParcelable(mBlockingTile, flags);
     }
@@ -60,6 +62,7 @@ public class Laser extends Line implements Rotatable, Parcelable, MyStaticVariab
         super(source);
         mAngle = source.readInt();
         isOn = source.readByte() != 0;
+        targetHit = source.readByte() != 0;
         mSourceTile = source.readParcelable(BoardObject.class.getClassLoader());
         mBlockingTile = source.readParcelable(BoardObject.class.getClassLoader());
     }
@@ -131,6 +134,10 @@ public class Laser extends Line implements Rotatable, Parcelable, MyStaticVariab
 
     public void setOn(boolean on) {
         this.isOn = on;
+    }
+
+    public boolean isTargetHit() {
+        return targetHit;
     }
 
     public void setmArea(BoardObject[][] area) {
@@ -217,6 +224,8 @@ public class Laser extends Line implements Rotatable, Parcelable, MyStaticVariab
             setLine(x1, y1, mBlockingPoint.x, mBlockingPoint.y);
             if (mBlockingTile instanceof Mirror) {
                 reflect();
+            } else if (mBlockingTile instanceof Target) {
+                hitTarget();
             }
         }
     }
@@ -233,9 +242,13 @@ public class Laser extends Line implements Rotatable, Parcelable, MyStaticVariab
                 newSegment.setAngle(this.mAngle);
                 newSegment.setmRelativeAngle((this.mAngle + 270) * (-1));
                 newSegment.setLine(this.mBlockingPoint.x, this.mBlockingPoint.y, mAreaDimension.left);
+                break;
+            //TODO add new cases
         }
+    }
 
-
+    private void hitTarget() {
+        targetHit = true;
     }
 
     /** Overridden from parent class Line
